@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-// URL de tu n8n - cambia según el entorno
-// En desarrollo local: usa localhost
-// En producción (Vercel): usa el dominio público
-const N8N_WEBHOOK_URL =
-  typeof window !== "undefined" && window.location.hostname === "localhost"
-    ? "http://localhost:5678/webhook/miTienda"
-    : "https://n8n.triptest.com.ar/webhook/miTienda";
+// URL de tu n8n en producción (DigitalOcean)
+const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
