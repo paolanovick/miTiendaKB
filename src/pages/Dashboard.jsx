@@ -3,16 +3,15 @@ import React, { useState, useEffect } from "react";
 // URL de tu n8n en producción (DigitalOcean)
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
-
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     id: null,
-    name: "",
-    description: "",
-    price: "",
+    nombre: "",
+    descripcion: "",
+    precio: "",
     image: "",
   });
 
@@ -21,7 +20,7 @@ const Dashboard = () => {
     fetchProducts();
   }, []);
 
-  // Obtener todos los productos desde MongoDB
+  // Obtener todos los productos desde n8n
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -29,10 +28,10 @@ const Dashboard = () => {
       const response = await fetch(N8N_WEBHOOK_URL);
       if (!response.ok) throw new Error("Error al cargar productos");
       const data = await response.json();
-      // MongoDB devuelve un array de productos
-      setProducts(Array.isArray(data) ? data : []);
+      // Asegurarse de que siempre sea un array
+      setProducts(Array.isArray(data) ? data : [data]);
     } catch (err) {
-      setError("No se pudieron cargar los productos desde la base de datos");
+      setError("No se pudieron cargar los productos desde n8n");
       console.error(err);
     } finally {
       setLoading(false);
@@ -48,14 +47,13 @@ const Dashboard = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: productData.name,
-          description: productData.description,
-          price: productData.price,
+          nombre: productData.nombre,
+          descripcion: productData.descripcion,
+          precio: productData.precio,
           image: productData.image,
         }),
       });
       if (!response.ok) throw new Error("Error al agregar producto");
-      // Recargar productos desde la base de datos
       await fetchProducts();
     } catch (err) {
       setError("No se pudo agregar el producto");
@@ -65,12 +63,11 @@ const Dashboard = () => {
     }
   };
 
-  // Actualizar producto existente (por implementar en n8n)
+  // Actualizar producto (si implementas en n8n)
   const updateProduct = async (productData) => {
     setLoading(true);
     setError(null);
     try {
-      // Actualizar localmente y recargar desde BD
       await fetchProducts();
       console.log("Producto actualizado:", productData);
     } catch (err) {
@@ -81,12 +78,11 @@ const Dashboard = () => {
     }
   };
 
-  // Eliminar producto (por implementar en n8n)
+  // Eliminar producto (si implementas en n8n)
   const deleteProduct = async (id) => {
     setLoading(true);
     setError(null);
     try {
-      // Eliminar localmente y recargar desde BD
       await fetchProducts();
       console.log("Producto eliminado:", id);
     } catch (err) {
@@ -102,13 +98,13 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price) return;
+    if (!form.nombre || !form.descripcion || !form.precio) return;
 
     const productData = {
       id: form.id || Date.now().toString(),
-      name: form.name,
-      description: form.description,
-      price: Number(form.price),
+      nombre: form.nombre,
+      descripcion: form.descripcion,
+      precio: Number(form.precio),
       image: form.image || "https://via.placeholder.com/300x200",
     };
 
@@ -118,7 +114,7 @@ const Dashboard = () => {
       await addProduct(productData);
     }
 
-    setForm({ id: null, name: "", description: "", price: "", image: "" });
+    setForm({ id: null, nombre: "", descripcion: "", precio: "", image: "" });
   };
 
   const handleEdit = (product) => setForm(product);
@@ -151,9 +147,9 @@ const Dashboard = () => {
       >
         <input
           type="text"
-          name="name"
+          name="nombre"
           placeholder="Nombre del producto"
-          value={form.name}
+          value={form.nombre}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -161,9 +157,9 @@ const Dashboard = () => {
         />
         <input
           type="text"
-          name="description"
+          name="descripcion"
           placeholder="Descripción"
-          value={form.description}
+          value={form.descripcion}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -171,9 +167,9 @@ const Dashboard = () => {
         />
         <input
           type="number"
-          name="price"
+          name="precio"
           placeholder="Precio"
-          value={form.price}
+          value={form.precio}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -201,17 +197,17 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {products.map((p) => (
           <div
-            key={p.id}
+            key={p.id || p._id}
             className="border rounded-lg shadow hover:shadow-lg p-4 flex flex-col"
           >
             <img
-              src={p.image}
-              alt={p.name}
+              src={p.image || "https://via.placeholder.com/300x200"}
+              alt={p.nombre}
               className="h-40 object-cover rounded mb-2"
             />
-            <h3 className="font-bold text-lg mb-1">{p.name}</h3>
-            <p className="text-gray-600 mb-2">{p.description}</p>
-            <p className="text-green-600 font-semibold mb-2">${p.price}</p>
+            <h3 className="font-bold text-lg mb-1">{p.nombre}</h3>
+            <p className="text-gray-600 mb-2">{p.descripcion}</p>
+            <p className="text-green-600 font-semibold mb-2">${p.precio}</p>
             <div className="flex gap-2 mt-auto">
               <button
                 onClick={() => handleEdit(p)}
@@ -221,7 +217,7 @@ const Dashboard = () => {
                 Editar
               </button>
               <button
-                onClick={() => handleDelete(p.id)}
+                onClick={() => handleDelete(p.id || p._id)}
                 className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 disabled:bg-gray-400"
                 disabled={loading}
               >
