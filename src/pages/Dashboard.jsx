@@ -27,7 +27,20 @@ const Dashboard = () => {
       const response = await fetch(N8N_WEBHOOK_URL);
       if (!response.ok) throw new Error("Error al cargar productos");
       const data = await response.json();
-      setProducts(Array.isArray(data) ? data : [data]);
+
+      // Si viene un solo objeto, lo convertimos en array
+      const arr = Array.isArray(data) ? data : [data];
+
+      // Mapear los campos de n8n al formato que usa el Dashboard
+      const mapped = arr.map((p) => ({
+        id: p.id || p._id,
+        name: p.nombre || p.name,
+        description: p.descripcion || p.description,
+        price: p.precio || p.price,
+        image: p.image || "https://via.placeholder.com/300x200",
+      }));
+
+      setProducts(mapped);
     } catch (err) {
       setError("No se pudieron cargar los productos desde la base de datos");
       console.error(err);
@@ -35,6 +48,7 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
 
   const addProduct = async (productData) => {
     setLoading(true);
