@@ -9,9 +9,9 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     id: null,
-    nombre: "",
-    descripcion: "",
-    precio: "",
+    name: "",
+    description: "",
+    price: "",
     image: "",
   });
 
@@ -20,7 +20,6 @@ const Dashboard = () => {
     fetchProducts();
   }, []);
 
-  // Obtener todos los productos desde n8n
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -28,32 +27,24 @@ const Dashboard = () => {
       const response = await fetch(N8N_WEBHOOK_URL);
       if (!response.ok) throw new Error("Error al cargar productos");
       const data = await response.json();
-      // Asegurarse de que siempre sea un array
       setProducts(Array.isArray(data) ? data : [data]);
     } catch (err) {
-      setError("No se pudieron cargar los productos desde n8n");
+      setError("No se pudieron cargar los productos desde la base de datos");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // Agregar nuevo producto
   const addProduct = async (productData) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
+      await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          nombre: productData.nombre,
-          descripcion: productData.descripcion,
-          precio: productData.precio,
-          image: productData.image,
-        }),
+        body: JSON.stringify({ ...productData, action: "add" }),
       });
-      if (!response.ok) throw new Error("Error al agregar producto");
       await fetchProducts();
     } catch (err) {
       setError("No se pudo agregar el producto");
@@ -63,13 +54,16 @@ const Dashboard = () => {
     }
   };
 
-  // Actualizar producto (si implementas en n8n)
   const updateProduct = async (productData) => {
     setLoading(true);
     setError(null);
     try {
+      await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...productData, action: "update" }),
+      });
       await fetchProducts();
-      console.log("Producto actualizado:", productData);
     } catch (err) {
       setError("No se pudo actualizar el producto");
       console.error(err);
@@ -78,13 +72,16 @@ const Dashboard = () => {
     }
   };
 
-  // Eliminar producto (si implementas en n8n)
   const deleteProduct = async (id) => {
     setLoading(true);
     setError(null);
     try {
+      await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "delete" }),
+      });
       await fetchProducts();
-      console.log("Producto eliminado:", id);
     } catch (err) {
       setError("No se pudo eliminar el producto");
       console.error(err);
@@ -98,13 +95,13 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.nombre || !form.descripcion || !form.precio) return;
+    if (!form.name || !form.description || !form.price) return;
 
     const productData = {
       id: form.id || Date.now().toString(),
-      nombre: form.nombre,
-      descripcion: form.descripcion,
-      precio: Number(form.precio),
+      name: form.name,
+      description: form.description,
+      price: Number(form.price),
       image: form.image || "https://via.placeholder.com/300x200",
     };
 
@@ -114,7 +111,7 @@ const Dashboard = () => {
       await addProduct(productData);
     }
 
-    setForm({ id: null, nombre: "", descripcion: "", precio: "", image: "" });
+    setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
   const handleEdit = (product) => setForm(product);
@@ -128,7 +125,6 @@ const Dashboard = () => {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-4">Administrar Productos</h2>
 
-      {/* Mensajes de estado */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -140,16 +136,15 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Formulario */}
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-white p-6 rounded-lg shadow"
       >
         <input
           type="text"
-          name="nombre"
+          name="name"
           placeholder="Nombre del producto"
-          value={form.nombre}
+          value={form.name}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -157,9 +152,9 @@ const Dashboard = () => {
         />
         <input
           type="text"
-          name="descripcion"
+          name="description"
           placeholder="Descripción"
-          value={form.descripcion}
+          value={form.description}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -167,9 +162,9 @@ const Dashboard = () => {
         />
         <input
           type="number"
-          name="precio"
+          name="price"
           placeholder="Precio"
-          value={form.precio}
+          value={form.price}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           required
@@ -193,21 +188,20 @@ const Dashboard = () => {
         </button>
       </form>
 
-      {/* Lista de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {products.map((p) => (
           <div
-            key={p.id || p._id}
+            key={p.id}
             className="border rounded-lg shadow hover:shadow-lg p-4 flex flex-col"
           >
             <img
-              src={p.image || "https://via.placeholder.com/300x200"}
-              alt={p.nombre}
+              src={p.image}
+              alt={p.name}
               className="h-40 object-cover rounded mb-2"
             />
-            <h3 className="font-bold text-lg mb-1">{p.nombre}</h3>
-            <p className="text-gray-600 mb-2">{p.descripcion}</p>
-            <p className="text-green-600 font-semibold mb-2">${p.precio}</p>
+            <h3 className="font-bold text-lg mb-1">{p.name}</h3>
+            <p className="text-gray-600 mb-2">{p.description}</p>
+            <p className="text-green-600 font-semibold mb-2">${p.price}</p>
             <div className="flex gap-2 mt-auto">
               <button
                 onClick={() => handleEdit(p)}
@@ -217,7 +211,7 @@ const Dashboard = () => {
                 Editar
               </button>
               <button
-                onClick={() => handleDelete(p.id || p._id)}
+                onClick={() => handleDelete(p.id)}
                 className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 disabled:bg-gray-400"
                 disabled={loading}
               >

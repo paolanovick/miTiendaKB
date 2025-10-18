@@ -9,16 +9,15 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
 
-// URL de tu API (cambiará cuando subas a Vercel)
-const API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:3000/api/products";
+// URL de tu n8n en producción (DigitalOcean)
+const API_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 function App() {
   const [products, setProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const location = useLocation();
 
-  // Cargar productos desde la API
+  // Cargar productos desde n8n
   React.useEffect(() => {
     fetchProducts();
   }, []);
@@ -28,57 +27,9 @@ function App() {
       setLoading(true);
       const response = await fetch(API_URL);
       const data = await response.json();
-
-      if (data.length === 0) {
-        // Si no hay productos, crear productos por defecto
-        const defaultProducts = [
-          {
-            id: Date.now(),
-            name: "Producto 1",
-            price: 100,
-            image: "https://via.placeholder.com/300",
-            description: "Descripción del producto",
-            stock: 5,
-            category: "Carteras",
-            sku: "CART-001",
-            specifications: "Material: Cuero, Color: Negro, Tamaño: Grande",
-            reviews: [],
-          },
-          {
-            id: Date.now() + 1,
-            name: "Producto 2",
-            price: 200,
-            image: "https://via.placeholder.com/300",
-            description: "Descripción del producto",
-            stock: 3,
-            category: "Carteras",
-            sku: "CART-002",
-            specifications: "Material: Cuero, Color: Marrón, Tamaño: Mediano",
-            reviews: [],
-          },
-        ];
-
-        // Insertar productos por defecto
-        for (const product of defaultProducts) {
-          await fetch(API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(product),
-          });
-        }
-
-        // Recargar productos
-        fetchProducts();
-      } else {
-        setProducts(data);
-      }
+      setProducts(Array.isArray(data) ? data : [data]);
     } catch (error) {
       console.error("Error al cargar productos:", error);
-      // Si falla la API, usar localStorage como fallback
-      const stored = localStorage.getItem("products");
-      if (stored) {
-        setProducts(JSON.parse(stored));
-      }
     } finally {
       setLoading(false);
     }
@@ -86,60 +37,42 @@ function App() {
 
   const handleAddProduct = async (product) => {
     try {
-      const response = await fetch(API_URL, {
+      await fetch(API_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        body: JSON.stringify({ ...product, action: "add" }),
       });
-
-      if (response.ok) {
-        const newProduct = await response.json();
-        setProducts([...products, newProduct]);
-      } else {
-        alert("Error al agregar producto");
-      }
+      fetchProducts();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al agregar producto:", error);
       alert("Error al conectar con el servidor");
     }
   };
 
-  const handleUpdateProduct = async (updated) => {
+  const handleUpdateProduct = async (product) => {
     try {
-      const response = await fetch(API_URL, {
-        method: "PUT",
+      await fetch(API_URL, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
+        body: JSON.stringify({ ...product, action: "update" }),
       });
-
-      if (response.ok) {
-        const newProducts = products.map((p) =>
-          p.id === updated.id ? updated : p
-        );
-        setProducts(newProducts);
-      } else {
-        alert("Error al actualizar producto");
-      }
+      fetchProducts();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al actualizar producto:", error);
       alert("Error al conectar con el servidor");
     }
   };
 
   const handleDeleteProduct = async (id) => {
     try {
-      const response = await fetch(`${API_URL}?id=${id}`, {
-        method: "DELETE",
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "delete" }),
       });
-
-      if (response.ok) {
-        const filtered = products.filter((p) => p.id !== id);
-        setProducts(filtered);
-      } else {
-        alert("Error al eliminar producto");
-      }
+      fetchProducts();
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error al eliminar producto:", error);
       alert("Error al conectar con el servidor");
     }
   };
