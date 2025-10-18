@@ -13,15 +13,15 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative cursor-pointer group w-full"
+      className="relative cursor-pointer group w-full sm:w-80 md:w-64 lg:w-72 mx-auto my-4"
       onClick={handleCardClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Tarjeta base */}
       <div
-        className={`w-full rounded-3xl pt-56 pb-6 px-6 transition-all duration-500 bg-kbbeige ${
-          isHovered ? "shadow-2xl scale-105" : "shadow-lg"
+        className={`w-full rounded-3xl pt-72 pb-6 px-6 bg-kbbeige transition-transform duration-500 shadow-lg ${
+          isHovered ? "scale-105 shadow-2xl" : ""
         }`}
       >
         {/* Decoración de fondo */}
@@ -29,33 +29,28 @@ export default function ProductCard({ product }) {
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-kbdark opacity-10 rounded-full blur-3xl -ml-12 -mb-12"></div>
 
         {/* Contenido */}
-        <div className="relative z-10">
-          {/* Nombre y descripción */}
-          <div className="text-center mb-4">
-            <h3 className="text-kbdark font-bold text-lg line-clamp-2 drop-shadow-lg">
-              {product.name}
-            </h3>
-            {product.description && (
-              <p
-                className="text-kbpurple text-xs line-clamp-2 transition-all duration-300 mt-1"
-                style={{
-                  opacity: isHovered ? 1 : 0,
-                  height: isHovered ? "auto" : "0",
-                }}
-              >
-                {product.description}
-              </p>
-            )}
-          </div>
+        <div className="relative z-10 text-center">
+          <h3 className="text-kbdark font-bold text-lg line-clamp-2 drop-shadow-lg">
+            {product.name}
+          </h3>
+          {product.description && (
+            <p
+              className="text-kbpurple text-xs line-clamp-2 transition-all duration-300 mt-1"
+              style={{
+                opacity: isHovered ? 1 : 0,
+                height: isHovered ? "auto" : "0",
+              }}
+            >
+              {product.description}
+            </p>
+          )}
 
           {/* Precio y botón */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-3 mt-4">
             <div className="flex flex-col">
               <span
-                className="text-kbpurple text-xs uppercase tracking-widest transition-all duration-300 font-semibold"
-                style={{
-                  opacity: isHovered ? 1 : 0,
-                }}
+                className="text-kbpurple text-xs uppercase tracking-widest font-semibold transition-opacity duration-300"
+                style={{ opacity: isHovered ? 1 : 0 }}
               >
                 Precio
               </span>
@@ -68,7 +63,7 @@ export default function ProductCard({ product }) {
                 e.stopPropagation();
                 addToCart(product);
               }}
-              className={`px-4 py-1.5 rounded-lg font-bold transition-all duration-300 whitespace-nowrap text-kbcream shadow-lg ${
+              className={`px-4 py-1.5 rounded-lg font-bold text-kbcream shadow-lg transition-all duration-300 whitespace-nowrap ${
                 isHovered
                   ? "bg-kbdark hover:bg-kbpurple scale-95"
                   : "bg-kbdark hover:bg-kbpurple"
@@ -86,8 +81,8 @@ export default function ProductCard({ product }) {
           isHovered ? "scale-110 -top-16" : "scale-100 -top-12"
         }`}
         style={{
-          width: isHovered ? "240px" : "220px",
-          height: isHovered ? "240px" : "220px",
+          width: isHovered ? "280px" : "260px",
+          height: isHovered ? "280px" : "260px",
         }}
       >
         <div className="w-full h-full overflow-hidden shadow-2xl rounded-2xl bg-white">
