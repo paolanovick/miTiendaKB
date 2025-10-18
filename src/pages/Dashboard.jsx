@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 // URLs de tus webhooks de n8n
-const N8N_CREATE_URL = "http://localhost:5678/webhook/miTienda";
-const N8N_LIST_URL = "http://localhost:5678/webhook/miTienda/list";
+const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/miTienda";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
@@ -26,7 +25,7 @@ const Dashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_LIST_URL);
+      const response = await fetch(N8N_WEBHOOK_URL);
       if (!response.ok) throw new Error("Error al cargar productos");
       const data = await response.json();
       // MongoDB devuelve un array de productos
@@ -44,7 +43,7 @@ const Dashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_CREATE_URL, {
+      const response = await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
