@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 // URL de tu n8n en producción (DigitalOcean)
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
+
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
