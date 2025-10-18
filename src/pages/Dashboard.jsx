@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 // URLs de tus webhooks de n8n
-const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/miTienda";
+// Si webhook/miTienda no funciona, usa la Test URL de n8n temporalmente
+const N8N_WEBHOOK_URL = "http://localhost:5678/webhook-test/miTienda"; // Cambia a test si es necesario
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
