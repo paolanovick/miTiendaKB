@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 import { MongoClient, ObjectId } from "mongodb";
 
 const uri = process.env.MONGODB_URI;
@@ -34,12 +36,13 @@ export default async function handler(req, res) {
     const collection = db.collection("productos");
 
     switch (req.method) {
-      case "GET":
+      case "GET": {
         // Obtener todos los productos
         const products = await collection.find({}).toArray();
         return res.status(200).json(products);
+      }
 
-      case "POST":
+      case "POST": {
         // Crear nuevo producto
         const newProduct = {
           ...req.body,
@@ -50,8 +53,9 @@ export default async function handler(req, res) {
         const inserted = await collection.findOne({ _id: result.insertedId });
 
         return res.status(201).json(inserted);
+      }
 
-      case "PUT":
+      case "PUT": {
         // Actualizar producto
         const { id, _id, ...updateData } = req.body;
         const productId = id || _id;
@@ -67,8 +71,9 @@ export default async function handler(req, res) {
 
         const updated = await collection.findOne({ id: Number(productId) });
         return res.status(200).json(updated);
+      }
 
-      case "DELETE":
+      case "DELETE": {
         // Eliminar producto
         const deleteId = req.query.id || req.body.id;
 
@@ -78,12 +83,14 @@ export default async function handler(req, res) {
 
         await collection.deleteOne({ id: Number(deleteId) });
         return res.status(200).json({ message: "Producto eliminado" });
+      }
 
-      default:
+      default: {
         res.setHeader("Allow", ["GET", "POST", "PUT", "DELETE"]);
         return res
           .status(405)
           .json({ error: `Método ${req.method} no permitido` });
+      }
     }
   } catch (error) {
     console.error("Error en API:", error);
