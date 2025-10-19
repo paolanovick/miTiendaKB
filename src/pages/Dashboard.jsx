@@ -36,7 +36,7 @@ const Dashboard = () => {
         name: p.name || p.nombre,
         description: p.description || p.descripcion,
         price: p.price || p.precio,
-        image: p.image || "https://via.placeholder.com/300x200",
+        image: p.image || "https://placehold.co/300x200",
       }));
 
       setProducts(mapped);
