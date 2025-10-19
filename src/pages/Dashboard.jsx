@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-// URL de tu n8n en producción (DigitalOcean)
+// ✅ URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 const Dashboard = () => {
@@ -15,41 +15,40 @@ const Dashboard = () => {
     image: "",
   });
 
-  // Cargar productos al iniciar
+  // 🔹 Cargar productos al iniciar
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // 🔹 Obtener productos desde n8n (GET)
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_WEBHOOK_URL);
+      const response = await fetch(N8N_WEBHOOK_URL, { method: "GET" });
       if (!response.ok) throw new Error("Error al cargar productos");
-      const data = await response.json();
 
-      // Si viene un solo objeto, lo convertimos en array
+      const data = await response.json();
       const arr = Array.isArray(data) ? data : [data];
 
-      // Mapear los campos de n8n al formato que usa el Dashboard
       const mapped = arr.map((p) => ({
         id: p.id || p._id,
-        name: p.nombre || p.name,
-        description: p.descripcion || p.description,
-        price: p.precio || p.price,
+        name: p.name || p.nombre,
+        description: p.description || p.descripcion,
+        price: p.price || p.precio,
         image: p.image || "https://via.placeholder.com/300x200",
       }));
 
       setProducts(mapped);
     } catch (err) {
-      setError("No se pudieron cargar los productos desde la base de datos");
       console.error(err);
+      setError("No se pudieron cargar los productos desde la base de datos");
     } finally {
       setLoading(false);
     }
   };
 
-
+  // 🔹 Agregar producto (POST)
   const addProduct = async (productData) => {
     setLoading(true);
     setError(null);
@@ -57,53 +56,18 @@ const Dashboard = () => {
       await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "add" }),
+        body: JSON.stringify(productData),
       });
-      await fetchProducts();
+      await fetchProducts(); // Refresca la lista
     } catch (err) {
+      console.error(err);
       setError("No se pudo agregar el producto");
-      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const updateProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "update" }),
-      });
-      await fetchProducts();
-    } catch (err) {
-      setError("No se pudo actualizar el producto");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const deleteProduct = async (id) => {
-    setLoading(true);
-    setError(null);
-    try {
-      await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action: "delete" }),
-      });
-      await fetchProducts();
-    } catch (err) {
-      setError("No se pudo eliminar el producto");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // 🔹 Manejadores del formulario
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -111,34 +75,25 @@ const Dashboard = () => {
     e.preventDefault();
     if (!form.name || !form.description || !form.price) return;
 
-    const productData = {
-      id: form.id || Date.now().toString(),
+    const newProduct = {
+      id: Date.now().toString(),
       name: form.name,
       description: form.description,
       price: Number(form.price),
       image: form.image || "https://via.placeholder.com/300x200",
     };
 
-    if (form.id) {
-      await updateProduct(productData);
-    } else {
-      await addProduct(productData);
-    }
-
+    await addProduct(newProduct);
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
-  const handleEdit = (product) => setForm(product);
-  const handleDelete = (id) => {
-    if (window.confirm("¿Estás seguro de eliminar este producto?")) {
-      deleteProduct(id);
-    }
-  };
-
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Administrar Productos</h2>
+    <div className="p-6 max-w-6xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">
+        🛍️ Administrar Productos
+      </h2>
 
+      {/* Mensajes */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -150,9 +105,10 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Formulario */}
       <form
         onSubmit={handleSubmit}
-        className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-white p-6 rounded-lg shadow"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-lg shadow"
       >
         <input
           type="text"
@@ -198,40 +154,33 @@ const Dashboard = () => {
           className="bg-green-600 text-white py-3 rounded hover:bg-green-700 col-span-full font-semibold disabled:bg-gray-400"
           disabled={loading}
         >
-          {form.id ? "Actualizar" : "Agregar"}
+          Agregar producto
         </button>
       </form>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* Lista de productos */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {products.length === 0 && !loading && (
+          <p className="text-gray-600 col-span-full text-center">
+            No hay productos disponibles.
+          </p>
+        )}
+
         {products.map((p) => (
           <div
             key={p.id}
-            className="border rounded-lg shadow hover:shadow-lg p-4 flex flex-col"
+            className="border rounded-lg shadow hover:shadow-xl p-4 flex flex-col bg-white transition-all"
           >
             <img
               src={p.image}
               alt={p.name}
-              className="h-40 object-cover rounded mb-2"
+              className="h-40 w-full object-cover rounded mb-3"
             />
-            <h3 className="font-bold text-lg mb-1">{p.name}</h3>
-            <p className="text-gray-600 mb-2">{p.description}</p>
-            <p className="text-green-600 font-semibold mb-2">${p.price}</p>
-            <div className="flex gap-2 mt-auto">
-              <button
-                onClick={() => handleEdit(p)}
-                className="bg-yellow-500 text-white py-1 px-3 rounded hover:bg-yellow-600 disabled:bg-gray-400"
-                disabled={loading}
-              >
-                Editar
-              </button>
-              <button
-                onClick={() => handleDelete(p.id)}
-                className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 disabled:bg-gray-400"
-                disabled={loading}
-              >
-                Eliminar
-              </button>
-            </div>
+            <h3 className="font-bold text-lg text-gray-800">{p.name}</h3>
+            <p className="text-gray-500 mb-2">{p.description}</p>
+            <p className="text-green-600 font-semibold text-lg mb-3">
+              ${p.price}
+            </p>
           </div>
         ))}
       </div>
