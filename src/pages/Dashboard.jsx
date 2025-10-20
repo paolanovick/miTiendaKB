@@ -64,32 +64,43 @@ const Dashboard = () => {
   }, [fetchProducts]);
 
   // 🔹 Función para agregar producto (POST)
-  const addProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log("📤 Enviando producto:", productData);
+ const addProduct = async (productData) => {
+   setLoading(true);
+   setError(null);
+   try {
+     console.log("📤 Enviando producto:", productData);
 
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
-      });
+     const response = await fetch(N8N_WEBHOOK_URL, {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify(productData),
+     });
 
-      const result = await safeJson(response);
-      console.log("📥 Respuesta del servidor:", result);
+     const result = await safeJson(response);
+     console.log("📥 Respuesta del servidor:", result);
 
-      if (!response.ok || !result)
-        throw new Error("Error en la respuesta del servidor");
+     if (!response.ok || !result)
+       throw new Error("Error en la respuesta del servidor");
 
-      await fetchProducts();
-    } catch (err) {
-      console.error("❌ Error al agregar producto:", err);
-      setError("No se pudo agregar el producto");
-    } finally {
-      setLoading(false);
-    }
-  };
+     // ✅ Agregar directamente al estado para que aparezca de inmediato
+     setProducts((prev) => [
+       ...prev,
+       {
+         id: productData.id,
+         name: productData.name,
+         description: productData.description,
+         price: productData.price,
+         image: productData.image || "https://placekitten.com/300/200",
+       },
+     ]);
+   } catch (err) {
+     console.error("❌ Error al agregar producto:", err);
+     setError("No se pudo agregar el producto");
+   } finally {
+     setLoading(false);
+   }
+ };
+
 
   // 🔹 Manejadores del formulario
   const handleChange = (e) =>
