@@ -11,8 +11,7 @@ import CartPage from "./pages/CartPage";
 
 // URLs de tu n8n en producción (DigitalOcean)
 const API_BASE = "https://n8n.triptest.com.ar/webhook";
-const API_GET = `${API_BASE}/miTienda`; // GET - Listar productos
-const API_POST = `${API_BASE}/miTienda/crear`; // POST - Crear/Actualizar/Eliminar
+const API_PRODUCTS = `${API_BASE}/miTienda`; // GET y POST usan la misma ruta
 
 function App() {
   const [products, setProducts] = React.useState([]);
@@ -27,7 +26,7 @@ function App() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_GET); // GET
+      const response = await fetch(API_PRODUCTS); // GET /miTienda
       const data = await response.json();
       setProducts(Array.isArray(data) ? data : [data]);
     } catch (error) {
@@ -39,8 +38,7 @@ function App() {
 
   const handleAddProduct = async (product) => {
     try {
-      const response = await fetch(API_POST, {
-        // POST /crear
+      const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...product, action: "add" }),
@@ -59,8 +57,7 @@ function App() {
 
   const handleUpdateProduct = async (product) => {
     try {
-      const response = await fetch(API_POST, {
-        // POST /crear
+      const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...product, action: "update" }),
@@ -79,8 +76,7 @@ function App() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      const response = await fetch(API_POST, {
-        // POST /crear
+      const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, action: "delete" }),
