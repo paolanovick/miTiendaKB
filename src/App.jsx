@@ -9,15 +9,17 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
 
-// URL de tu n8n en producción (DigitalOcean)
-const API_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
+// URLs de tu n8n en producción (DigitalOcean)
+const API_BASE = "https://n8n.triptest.com.ar/webhook";
+const API_GET = `${API_BASE}/miTienda`; // GET - Listar productos
+const API_POST = `${API_BASE}/miTienda/crear`; // POST - Crear/Actualizar/Eliminar
 
 function App() {
   const [products, setProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const location = useLocation();
 
-  // Cargar productos desde n8n
+  // Cargar productos desde n8n (GET)
   React.useEffect(() => {
     fetchProducts();
   }, []);
@@ -25,7 +27,7 @@ function App() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(API_URL);
+      const response = await fetch(API_GET); // GET
       const data = await response.json();
       setProducts(Array.isArray(data) ? data : [data]);
     } catch (error) {
@@ -37,12 +39,18 @@ function App() {
 
   const handleAddProduct = async (product) => {
     try {
-      await fetch(API_URL, {
+      const response = await fetch(API_POST, {
+        // POST /crear
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...product, action: "add" }),
       });
-      fetchProducts();
+
+      if (response.ok) {
+        fetchProducts(); // Recargar lista
+      } else {
+        alert("Error al agregar producto");
+      }
     } catch (error) {
       console.error("Error al agregar producto:", error);
       alert("Error al conectar con el servidor");
@@ -51,12 +59,18 @@ function App() {
 
   const handleUpdateProduct = async (product) => {
     try {
-      await fetch(API_URL, {
+      const response = await fetch(API_POST, {
+        // POST /crear
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...product, action: "update" }),
       });
-      fetchProducts();
+
+      if (response.ok) {
+        fetchProducts(); // Recargar lista
+      } else {
+        alert("Error al actualizar producto");
+      }
     } catch (error) {
       console.error("Error al actualizar producto:", error);
       alert("Error al conectar con el servidor");
@@ -65,12 +79,18 @@ function App() {
 
   const handleDeleteProduct = async (id) => {
     try {
-      await fetch(API_URL, {
+      const response = await fetch(API_POST, {
+        // POST /crear
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, action: "delete" }),
       });
-      fetchProducts();
+
+      if (response.ok) {
+        fetchProducts(); // Recargar lista
+      } else {
+        alert("Error al eliminar producto");
+      }
     } catch (error) {
       console.error("Error al eliminar producto:", error);
       alert("Error al conectar con el servidor");
