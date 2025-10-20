@@ -10,8 +10,8 @@ import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
 
 // URLs de tu n8n en producción (DigitalOcean)
-const API_BASE = "https://n8n.triptest.com.ar/webhook/miTienda";
-const API_PRODUCTS = `${API_BASE}/miTienda`; // GET y POST usan la misma ruta
+const API_BASE = "https://n8n.triptest.com.ar/webhook";
+const API_PRODUCTS = `${API_BASE}/miTienda`;
 
 function App() {
   const [products, setProducts] = React.useState([]);
