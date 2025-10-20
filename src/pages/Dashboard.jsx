@@ -24,7 +24,7 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Función para cargar productos (GET)
+  // 🔹 Cargar productos (GET)
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -32,13 +32,15 @@ const Dashboard = () => {
       const response = await fetch(N8N_WEBHOOK_URL);
       const data = await safeJson(response);
       const arr = Array.isArray(data) ? data : data ? [data] : [];
+
       const mapped = arr.map((p) => ({
         id: p.id || p._id || Date.now().toString(),
         name: p.name || p.nombre || "Sin nombre",
         description: p.description || p.descripcion || "",
         price: p.price || p.precio || 0,
-        image: p.image || p.imagen || "https://placehold.co/300x200",
+        image: p.image || p.imagen || "https://via.placeholder.com/300x200",
       }));
+
       setProducts(mapped);
     } catch (err) {
       console.error("Error al cargar productos:", err);
@@ -52,7 +54,7 @@ const Dashboard = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // 🔹 Agregar producto (POST)
+  // 🔹 Agregar producto (CREATE)
   const addProduct = async (productData) => {
     setLoading(true);
     setError(null);
@@ -60,38 +62,40 @@ const Dashboard = () => {
       const response = await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
+        body: JSON.stringify({ ...productData, action: "create" }),
       });
 
       if (!response.ok) throw new Error("Error al agregar");
 
-      await fetchProducts(); // Recargar lista
-      alert("✅ Producto agregado correctamente");
+      // Agregar al estado inmediatamente
+      setProducts((prev) => [...prev, productData]);
     } catch (err) {
-      console.error("Error al agregar:", err);
+      console.error("❌ Error al agregar:", err);
       setError("No se pudo agregar el producto");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔹 Actualizar producto (PUT)
+  // 🔹 Actualizar producto (UPDATE)
   const updateProduct = async (productData) => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "PUT",
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(productData),
+        body: JSON.stringify({ ...productData, action: "update" }),
       });
 
       if (!response.ok) throw new Error("Error al actualizar");
 
-      await fetchProducts(); // Recargar lista
-      alert("✅ Producto actualizado correctamente");
+      // Actualizar en el estado
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productData.id ? productData : p))
+      );
     } catch (err) {
-      console.error("Error al actualizar:", err);
+      console.error("❌ Error al actualizar:", err);
       setError("No se pudo actualizar el producto");
     } finally {
       setLoading(false);
@@ -100,21 +104,23 @@ const Dashboard = () => {
 
   // 🔹 Eliminar producto (DELETE)
   const deleteProduct = async (id) => {
-    if (!confirm("¿Estás seguro de eliminar este producto?")) return;
+    if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
 
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(`${N8N_WEBHOOK_URL}?id=${id}`, {
-        method: "DELETE",
+      const response = await fetch(N8N_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, action: "delete" }),
       });
 
       if (!response.ok) throw new Error("Error al eliminar");
 
-      await fetchProducts(); // Recargar lista
-      alert("✅ Producto eliminado correctamente");
+      // Eliminar del estado
+      setProducts((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      console.error("Error al eliminar:", err);
+      console.error("❌ Error al eliminar:", err);
       setError("No se pudo eliminar el producto");
     } finally {
       setLoading(false);
@@ -134,11 +140,11 @@ const Dashboard = () => {
     }
 
     const productData = {
-      id: form.id || Date.now(),
+      id: form.id || Date.now().toString(),
       name: form.name,
       description: form.description,
       price: Number(form.price),
-      image: form.image || "https://placehold.co/300x200",
+      image: form.image || "https://via.placeholder.com/300x200",
     };
 
     if (form.id) {
@@ -147,9 +153,11 @@ const Dashboard = () => {
       await addProduct(productData);
     }
 
+    // Limpiar formulario
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
+  // 🔹 Cargar producto para editar
   const handleEdit = (product) => {
     setForm({
       id: product.id,
@@ -158,14 +166,7 @@ const Dashboard = () => {
       price: product.price,
       image: product.image,
     });
-  };
-
-  const handleDelete = (id) => {
-    deleteProduct(id);
-  };
-
-  const resetForm = () => {
-    setForm({ id: null, name: "", description: "", price: "", image: "" });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -230,25 +231,13 @@ const Dashboard = () => {
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           disabled={loading}
         />
-        <div className="col-span-full flex gap-2">
-          <button
-            type="submit"
-            className="flex-1 bg-green-600 text-white py-3 rounded hover:bg-green-700 font-semibold disabled:bg-gray-400"
-            disabled={loading}
-          >
-            {form.id ? "✏️ Actualizar" : "➕ Agregar"}
-          </button>
-          {form.id && (
-            <button
-              type="button"
-              onClick={resetForm}
-              className="px-6 bg-gray-500 text-white py-3 rounded hover:bg-gray-600 font-semibold"
-              disabled={loading}
-            >
-              Cancelar
-            </button>
-          )}
-        </div>
+        <button
+          type="submit"
+          className="bg-green-600 text-white py-3 rounded hover:bg-green-700 col-span-full font-semibold disabled:bg-gray-400"
+          disabled={loading}
+        >
+          {form.id ? "💾 Actualizar producto" : "➕ Agregar producto"}
+        </button>
       </form>
 
       {/* Lista de productos */}
@@ -270,21 +259,23 @@ const Dashboard = () => {
               className="h-40 w-full object-cover rounded mb-3"
             />
             <h3 className="font-bold text-lg text-gray-800">{p.name}</h3>
-            <p className="text-gray-500 mb-2 line-clamp-2">{p.description}</p>
+            <p className="text-gray-500 mb-2 text-sm">{p.description}</p>
             <p className="text-green-600 font-semibold text-lg mb-3">
               ${p.price}
             </p>
+
+            {/* Botones de acción */}
             <div className="flex gap-2 mt-auto">
               <button
                 onClick={() => handleEdit(p)}
-                className="flex-1 bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 font-semibold"
+                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400 text-sm"
                 disabled={loading}
               >
                 ✏️ Editar
               </button>
               <button
-                onClick={() => handleDelete(p.id)}
-                className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600 font-semibold"
+                onClick={() => deleteProduct(p.id)}
+                className="flex-1 bg-red-500 text-white py-2 px-3 rounded hover:bg-red-600 transition-colors disabled:bg-gray-400 text-sm"
                 disabled={loading}
               >
                 🗑️ Eliminar
