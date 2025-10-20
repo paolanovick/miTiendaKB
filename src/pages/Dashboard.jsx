@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 // ✅ URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
@@ -15,30 +15,41 @@ const Dashboard = () => {
     image: "",
   });
 
-  // 🔹 Cargar productos al iniciar
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  // 🧩 Función segura para parsear JSON (evita errores si n8n falla)
+  const safeJson = async (response) => {
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
+  };
 
-  // 🔹 Obtener productos desde n8n (GET)
-  const fetchProducts = async () => {
+  // 🔹 Función para cargar productos (GET)
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, { method: "GET" });
-      if (!response.ok) throw new Error("Error al cargar productos");
-
-      const data = await response.json();
-      const arr = Array.isArray(data) ? data : [data];
-
+      const response = await fetch(N8N_WEBHOOK_URL);
+      const data = await safeJson(response);
+      // Asegurarse que siempre sea un array
+      const arr = Array.isArray(data) ? data : data ? [data] : [];
       const mapped = arr.map((p) => ({
-        id: p.id || p._id,
-        name: p.name || p.nombre,
-        description: p.description || p.descripcion,
-        price: p.price || p.precio,
-        image: p.image || "https://placehold.co/300x200",
+        id:
+          p.id || p._id || (p.product && p.product.id) || Date.now().toString(),
+        name:
+          p.name || p.nombre || (p.product && p.product.name) || "Sin nombre",
+        description:
+          p.description ||
+          p.descripcion ||
+          (p.product && p.product.description) ||
+          "",
+        price: p.price || p.precio || (p.product && p.product.price) || 0,
+        image:
+          p.image ||
+          p.imagen ||
+          (p.product && p.product.image) ||
+          "https://placekitten.com/300/200",
       }));
-
       setProducts(mapped);
     } catch (err) {
       console.error("Error al cargar productos:", err);
@@ -46,77 +57,50 @@ const Dashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  // 🔹 Agregar producto (POST)
-  const addProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      console.log("📤 Enviando producto:", productData);
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "create" }),
-      });
+  // 🔹 Función para agregar producto (POST)
+ const addProduct = async (productData) => {
+   setLoading(true);
+   setError(null);
+   try {
+     console.log("📤 Enviando producto:", productData);
 
-      if (!response.ok) throw new Error("Error al agregar");
+     const response = await fetch(N8N_WEBHOOK_URL, {
+       method: "POST",
+       headers: { "Content-Type": "application/json" },
+       body: JSON.stringify(productData),
+     });
 
-      await fetchProducts(); // Refresca la lista
-    } catch (err) {
-      console.error("❌ Error al agregar producto:", err);
-      setError("No se pudo agregar el producto");
-    } finally {
-      setLoading(false);
-    }
-  };
+     const result = await safeJson(response);
+     console.log("📥 Respuesta del servidor:", result);
 
-  // 🔹 Actualizar producto
-  const updateProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "update" }),
-      });
+     if (!response.ok || !result)
+       throw new Error("Error en la respuesta del servidor");
 
-      if (!response.ok) throw new Error("Error al actualizar");
+     // ✅ Agregar directamente al estado para que aparezca de inmediato
+     setProducts((prev) => [
+       ...prev,
+       {
+         id: productData.id,
+         name: productData.name,
+         description: productData.description,
+         price: productData.price,
+         image: productData.image || "https://placekitten.com/300/200",
+       },
+     ]);
+   } catch (err) {
+     console.error("❌ Error al agregar producto:", err);
+     setError("No se pudo agregar el producto");
+   } finally {
+     setLoading(false);
+   }
+ };
 
-      await fetchProducts();
-    } catch (err) {
-      console.error("❌ Error al actualizar:", err);
-      setError("No se pudo actualizar el producto");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 🔹 Eliminar producto
-  const deleteProduct = async (id) => {
-    if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
-
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action: "delete" }),
-      });
-
-      if (!response.ok) throw new Error("Error al eliminar");
-
-      await fetchProducts();
-    } catch (err) {
-      console.error("❌ Error al eliminar:", err);
-      setError("No se pudo eliminar el producto");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // 🔹 Manejadores del formulario
   const handleChange = (e) =>
@@ -124,44 +108,23 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🚀 Formulario enviado");
 
     if (!form.name || !form.description || !form.price) {
       alert("Por favor completa todos los campos obligatorios");
       return;
     }
 
-    const productData = {
-      id: form.id || Date.now().toString(),
+    const newProduct = {
+      id: Date.now().toString(),
       name: form.name,
       description: form.description,
       price: Number(form.price),
-      image: form.image || "https://via.placeholder.com/300x200",
+      image: form.image || "https://placekitten.com/300/200",
     };
 
-    console.log("📦 Producto a enviar:", productData);
+    await addProduct(newProduct);
 
-    if (form.id) {
-      await updateProduct(productData);
-    } else {
-      await addProduct(productData);
-    }
-
-    // Limpiar formulario
     setForm({ id: null, name: "", description: "", price: "", image: "" });
-  };
-
-  // 🔹 Cargar producto para editar
-  const handleEdit = (product) => {
-    setForm({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      image: product.image,
-    });
-    // Scroll al formulario
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
@@ -231,7 +194,7 @@ const Dashboard = () => {
           className="bg-green-600 text-white py-3 rounded hover:bg-green-700 col-span-full font-semibold disabled:bg-gray-400"
           disabled={loading}
         >
-          {form.id ? "💾 Actualizar producto" : "➕ Agregar producto"}
+          Agregar producto
         </button>
       </form>
 
@@ -254,28 +217,10 @@ const Dashboard = () => {
               className="h-40 w-full object-cover rounded mb-3"
             />
             <h3 className="font-bold text-lg text-gray-800">{p.name}</h3>
-            <p className="text-gray-500 mb-2 text-sm">{p.description}</p>
+            <p className="text-gray-500 mb-2">{p.description}</p>
             <p className="text-green-600 font-semibold text-lg mb-3">
               ${p.price}
             </p>
-
-            {/* Botones de acción */}
-            <div className="flex gap-2 mt-auto">
-              <button
-                onClick={() => handleEdit(p)}
-                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400"
-                disabled={loading}
-              >
-                ✏️ Editar
-              </button>
-              <button
-                onClick={() => deleteProduct(p.id)}
-                className="flex-1 bg-red-500 text-white py-2 px-3 rounded hover:bg-red-600 transition-colors disabled:bg-gray-400"
-                disabled={loading}
-              >
-                🗑️ Eliminar
-              </button>
-            </div>
           </div>
         ))}
       </div>
