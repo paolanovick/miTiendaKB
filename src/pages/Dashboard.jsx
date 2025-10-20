@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-// ✅ URL de tu Webhook en n8n
+// URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 const Dashboard = () => {
@@ -15,7 +15,7 @@ const Dashboard = () => {
     image: "",
   });
 
-  // Función segura para parsear JSON
+  // Parse seguro de JSON
   const safeJson = async (response) => {
     try {
       return await response.json();
@@ -31,12 +31,8 @@ const Dashboard = () => {
     try {
       const response = await fetch(N8N_WEBHOOK_URL);
       const data = await safeJson(response);
-      console.log("Productos recibidos:", data); // depuración
-
-      // Asegurar que siempre sea un array
       const arr = Array.isArray(data) ? data : data ? [data] : [];
 
-      // Mapeo de campos
       const mapped = arr.map((p) => ({
         id: p.id || p._id || Date.now().toString(),
         name: p.name || p.nombre || "Sin nombre",
@@ -45,20 +41,7 @@ const Dashboard = () => {
         image: p.image || p.imagen || "https://placehold.co/300x200",
       }));
 
-      // Si no hay productos, agregar uno de prueba
-      setProducts(
-        mapped.length
-          ? mapped
-          : [
-              {
-                id: "68f3f0a809dc3787e2b06de3",
-                name: "Producto de prueba",
-                description: "Producto de prueba inicial",
-                price: 100,
-                image: "https://via.placeholder.com/300x200",
-              },
-            ]
-      );
+      setProducts(mapped);
     } catch (err) {
       console.error("Error al cargar productos:", err);
       setError("No se pudieron cargar los productos");
@@ -82,7 +65,7 @@ const Dashboard = () => {
         body: JSON.stringify(productData),
       });
       if (!response.ok) throw new Error("Error al agregar");
-      await fetchProducts();
+      setProducts((prev) => [...prev, productData]); // mantener tarjetas existentes
       alert("✅ Producto agregado correctamente");
     } catch (err) {
       console.error("Error al agregar:", err);
@@ -103,7 +86,11 @@ const Dashboard = () => {
         body: JSON.stringify(productData),
       });
       if (!response.ok) throw new Error("Error al actualizar");
-      await fetchProducts();
+
+      // Actualizar localmente
+      setProducts((prev) =>
+        prev.map((p) => (p.id === productData.id ? productData : p))
+      );
       alert("✅ Producto actualizado correctamente");
     } catch (err) {
       console.error("Error al actualizar:", err);
@@ -123,7 +110,9 @@ const Dashboard = () => {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Error al eliminar");
-      await fetchProducts();
+
+      // Eliminar localmente
+      setProducts((prev) => prev.filter((p) => p.id !== id));
       alert("✅ Producto eliminado correctamente");
     } catch (err) {
       console.error("Error al eliminar:", err);
@@ -133,7 +122,7 @@ const Dashboard = () => {
     }
   };
 
-  // Manejadores del formulario
+  // Formulario
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -143,24 +132,25 @@ const Dashboard = () => {
       alert("Por favor completa todos los campos obligatorios");
       return;
     }
+
     const productData = {
-      id: form.id || Date.now(),
+      id: form.id || Date.now().toString(),
       name: form.name,
       description: form.description,
       price: Number(form.price),
       image: form.image || "https://placehold.co/300x200",
     };
+
     if (form.id) {
       await updateProduct(productData);
     } else {
       await addProduct(productData);
     }
+
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
-  const handleEdit = (product) => {
-    setForm({ ...product });
-  };
+  const handleEdit = (product) => setForm({ ...product });
 
   const handleDelete = (id) => deleteProduct(id);
 
@@ -173,7 +163,6 @@ const Dashboard = () => {
         🛍️ Administrar Productos
       </h2>
 
-      {/* Mensajes */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
