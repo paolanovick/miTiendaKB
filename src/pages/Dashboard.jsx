@@ -36,7 +36,7 @@ const Dashboard = () => {
         name: p.name || p.nombre,
         description: p.description || p.descripcion,
         price: p.price || p.precio,
-        image: p.image || "https://placehold.co/300x200",
+        image: p.image || "https://placehold.co/300x200?text=Sin+imagen",
       }));
 
       setProducts(mapped);
@@ -90,7 +90,7 @@ const Dashboard = () => {
       name: form.name,
       description: form.description,
       price: Number(form.price),
-      image: form.image || "https://via.placeholder.com/300x200",
+      image: form.image || "https://placehold.co/300x200?text=Sin+imagen",
     };
 
     console.log("📦 Producto a enviar:", newProduct);
