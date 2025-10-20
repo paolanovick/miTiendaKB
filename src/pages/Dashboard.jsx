@@ -15,7 +15,7 @@ const Dashboard = () => {
     image: "",
   });
 
-  // 🧩 Función segura para parsear JSON (evita errores)
+  // 🧩 Función segura para parsear JSON (evita errores si n8n falla)
   const safeJson = async (response) => {
     try {
       return await response.json();
@@ -24,40 +24,46 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Obtener productos desde n8n (GET)
+  // 🔹 Función para cargar productos (GET)
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(N8N_WEBHOOK_URL, { method: "GET" });
-      if (!response.ok) throw new Error("Error al cargar productos");
-
+      const response = await fetch(N8N_WEBHOOK_URL);
       const data = await safeJson(response);
-      const arr = Array.isArray(data) ? data : [data];
-
+      // Asegurarse que siempre sea un array
+      const arr = Array.isArray(data) ? data : data ? [data] : [];
       const mapped = arr.map((p) => ({
-        id: p.id || p._id,
-        name: p.name || p.nombre || "Sin nombre",
-        description: p.description || p.descripcion || "",
-        price: p.price || p.precio || 0,
-        image: p.image || "https://placehold.co/300x200?text=Sin+imagen",
+        id:
+          p.id || p._id || (p.product && p.product.id) || Date.now().toString(),
+        name:
+          p.name || p.nombre || (p.product && p.product.name) || "Sin nombre",
+        description:
+          p.description ||
+          p.descripcion ||
+          (p.product && p.product.description) ||
+          "",
+        price: p.price || p.precio || (p.product && p.product.price) || 0,
+        image:
+          p.image ||
+          p.imagen ||
+          (p.product && p.product.image) ||
+          "https://placehold.co/300x200?text=Sin+imagen",
       }));
-
       setProducts(mapped);
     } catch (err) {
-      console.error("❌ Error al cargar productos:", err);
+      console.error("Error al cargar productos:", err);
       setError("No se pudieron cargar los productos desde la base de datos");
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // 🔹 Cargar productos al iniciar
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // 🔹 Agregar producto (POST)
+  // 🔹 Función para agregar producto (POST)
   const addProduct = async (productData) => {
     setLoading(true);
     setError(null);
@@ -73,9 +79,10 @@ const Dashboard = () => {
       const result = await safeJson(response);
       console.log("📥 Respuesta del servidor:", result);
 
-      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+      if (!response.ok || !result)
+        throw new Error("Error en la respuesta del servidor");
 
-      await fetchProducts(); // 🔄 Refresca la lista
+      await fetchProducts();
     } catch (err) {
       console.error("❌ Error al agregar producto:", err);
       setError("No se pudo agregar el producto");
@@ -90,7 +97,6 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("🚀 Formulario enviado");
 
     if (!form.name || !form.description || !form.price) {
       alert("Por favor completa todos los campos obligatorios");
@@ -105,10 +111,8 @@ const Dashboard = () => {
       image: form.image || "https://placehold.co/300x200?text=Sin+imagen",
     };
 
-    console.log("📦 Producto a enviar:", newProduct);
     await addProduct(newProduct);
 
-    // 🧹 Limpiar formulario
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
