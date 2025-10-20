@@ -4,12 +4,7 @@ import { LogOut } from "lucide-react";
 import Dashboard from "../pages/Dashboard";
 import Login from "./Login";
 
-const Admin = ({
-  products,
-  onAddProduct,
-  onUpdateProduct,
-  onDeleteProduct,
-}) => {
+const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
 
@@ -43,12 +38,7 @@ const Admin = ({
       </header>
 
       <div className="container mx-auto p-6 pt-32">
-        <Dashboard
-          products={products}
-          onAddProduct={onAddProduct}
-          onUpdateProduct={onUpdateProduct}
-          onDeleteProduct={onDeleteProduct}
-        />
+        <Dashboard />
       </div>
     </>
   );
