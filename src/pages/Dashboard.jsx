@@ -1,10 +1,15 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 
 // ✅ URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
-const Dashboard = () => {
-  const [products, setProducts] = useState([]);
+const Dashboard = ({
+  products: propsProducts,
+  onAddProduct,
+  onUpdateProduct,
+  onDeleteProduct,
+}) => {
+  const [products, setProducts] = useState(propsProducts || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
@@ -15,7 +20,14 @@ const Dashboard = () => {
     image: "",
   });
 
-  // 🧩 Función segura para parsear JSON
+  // Actualizar productos cuando cambien las props
+  useEffect(() => {
+    if (propsProducts) {
+      setProducts(propsProducts);
+    }
+  }, [propsProducts]);
+
+  // 🧩 Función segura para parsear JSON (no se usa si vienen props)
   const safeJson = async (response) => {
     try {
       return await response.json();
@@ -24,81 +36,57 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Cargar productos (GET)
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL);
-      const data = await safeJson(response);
-      const arr = Array.isArray(data) ? data : data ? [data] : [];
-
-      const mapped = arr.map((p) => ({
-        id: p.id || p._id || Date.now().toString(),
-        name: p.name || p.nombre || "Sin nombre",
-        description: p.description || p.descripcion || "",
-        price: p.price || p.precio || 0,
-        image: p.image || p.imagen || "https://via.placeholder.com/300x200",
-      }));
-
-      setProducts(mapped);
-    } catch (err) {
-      console.error("Error al cargar productos:", err);
-      setError("No se pudieron cargar los productos");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
-
   // 🔹 Agregar producto (CREATE)
   const addProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "create" }),
-      });
+    if (onAddProduct) {
+      // Si recibe la función por props, usarla
+      await onAddProduct(productData);
+    } else {
+      // Fallback: hacer fetch directo
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...productData, action: "create" }),
+        });
 
-      if (!response.ok) throw new Error("Error al agregar");
-
-      // Agregar al estado inmediatamente
-      setProducts((prev) => [...prev, productData]);
-    } catch (err) {
-      console.error("❌ Error al agregar:", err);
-      setError("No se pudo agregar el producto");
-    } finally {
-      setLoading(false);
+        if (!response.ok) throw new Error("Error al agregar");
+        setProducts((prev) => [...prev, productData]);
+      } catch (err) {
+        console.error("❌ Error al agregar:", err);
+        setError("No se pudo agregar el producto");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
   // 🔹 Actualizar producto (UPDATE)
   const updateProduct = async (productData) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...productData, action: "update" }),
-      });
+    if (onUpdateProduct) {
+      await onUpdateProduct(productData);
+    } else {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...productData, action: "update" }),
+        });
 
-      if (!response.ok) throw new Error("Error al actualizar");
-
-      // Actualizar en el estado
-      setProducts((prev) =>
-        prev.map((p) => (p.id === productData.id ? productData : p))
-      );
-    } catch (err) {
-      console.error("❌ Error al actualizar:", err);
-      setError("No se pudo actualizar el producto");
-    } finally {
-      setLoading(false);
+        if (!response.ok) throw new Error("Error al actualizar");
+        setProducts((prev) =>
+          prev.map((p) => (p.id === productData.id ? productData : p))
+        );
+      } catch (err) {
+        console.error("❌ Error al actualizar:", err);
+        setError("No se pudo actualizar el producto");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -106,24 +94,26 @@ const Dashboard = () => {
   const deleteProduct = async (id) => {
     if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
 
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await fetch(N8N_WEBHOOK_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action: "delete" }),
-      });
+    if (onDeleteProduct) {
+      await onDeleteProduct(id);
+    } else {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(N8N_WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, action: "delete" }),
+        });
 
-      if (!response.ok) throw new Error("Error al eliminar");
-
-      // Eliminar del estado
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      console.error("❌ Error al eliminar:", err);
-      setError("No se pudo eliminar el producto");
-    } finally {
-      setLoading(false);
+        if (!response.ok) throw new Error("Error al eliminar");
+        setProducts((prev) => prev.filter((p) => p.id !== id));
+      } catch (err) {
+        console.error("❌ Error al eliminar:", err);
+        setError("No se pudo eliminar el producto");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
