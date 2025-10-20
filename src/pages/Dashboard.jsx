@@ -28,13 +28,7 @@ const Dashboard = ({
   }, [propsProducts]);
 
   // 🧩 Función segura para parsear JSON (no se usa si vienen props)
-  const safeJson = async (response) => {
-    try {
-      return await response.json();
-    } catch {
-      return null;
-    }
-  };
+ 
 
   // 🔹 Agregar producto (CREATE)
   const addProduct = async (productData) => {

@@ -64,7 +64,7 @@ function App() {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...product, action: "add" }),
+        body: JSON.stringify({ ...product, action: "create" }), // ← cambia "add" por "create"
       });
 
       const result = await safeJson(response);
