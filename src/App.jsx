@@ -23,31 +23,18 @@ function App() {
     fetchProducts();
   }, []);
 
-const fetchProducts = async () => {
-  try {
-    setLoading(true);
-    const response = await fetch(API_PRODUCTS); // GET /miTienda
-    const data = await response.json();
-
-    // 🔹 Mapeo de compatibilidad con el Dashboard
-    const arr = Array.isArray(data) ? data : [data];
-    const mapped = arr.map((p) => ({
-      id: p.id || p._id,
-      name: p.name || p.nombre,
-      description: p.description || p.descripcion,
-      price: p.price || p.precio,
-      image:
-        p.image || p.imagen || "https://placehold.co/300x200?text=Sin+imagen",
-    }));
-
-    setProducts(mapped);
-  } catch (error) {
-    console.error("Error al cargar productos:", error);
-  } finally {
-    setLoading(false);
-  }
-};
-
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(API_PRODUCTS); // GET /miTienda
+      const data = await response.json();
+      setProducts(Array.isArray(data) ? data : [data]);
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAddProduct = async (product) => {
     try {
