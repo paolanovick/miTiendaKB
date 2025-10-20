@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import { CartProvider } from "./components/CartProvider";
 import Header from "./components/Header";
@@ -14,29 +14,52 @@ const API_BASE = "https://n8n.triptest.com.ar/webhook";
 const API_PRODUCTS = `${API_BASE}/miTienda`;
 
 function App() {
-  const [products, setProducts] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  // Cargar productos desde n8n (GET)
-  React.useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  // 🧩 Función segura para parsear JSON
+  const safeJson = async (response) => {
     try {
-      setLoading(true);
-      const response = await fetch(API_PRODUCTS); // GET /miTienda
-      const data = await response.json();
-      setProducts(Array.isArray(data) ? data : [data]);
-    } catch (error) {
-      console.error("Error al cargar productos:", error);
-    } finally {
-      setLoading(false);
+      return await response.json();
+    } catch {
+      return null;
     }
   };
 
+  // 🔹 Cargar productos desde n8n (GET)
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(API_PRODUCTS, { method: "GET" });
+      if (!response.ok) throw new Error("Error al cargar productos");
+
+      const data = await safeJson(response);
+      const arr = Array.isArray(data) ? data : [data];
+
+      const mapped = arr.map((p) => ({
+        id: p.id || p._id,
+        name: p.name || p.nombre || "Sin nombre",
+        description: p.description || p.descripcion || "",
+        price: p.price || p.precio || 0,
+        image: p.image || "https://placehold.co/300x200?text=Sin+imagen",
+      }));
+
+      setProducts(mapped);
+    } catch (error) {
+      console.error("❌ Error al cargar productos:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
+
+  // 🔹 Funciones para CRUD de productos
   const handleAddProduct = async (product) => {
+    setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
@@ -44,18 +67,22 @@ function App() {
         body: JSON.stringify({ ...product, action: "add" }),
       });
 
-      if (response.ok) {
-        fetchProducts(); // Recargar lista
-      } else {
-        alert("Error al agregar producto");
-      }
+      const result = await safeJson(response);
+      console.log("📥 Respuesta al agregar:", result);
+
+      if (!response.ok) throw new Error("Error al agregar producto");
+
+      fetchProducts();
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      console.error("❌ Error al agregar producto:", error);
       alert("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleUpdateProduct = async (product) => {
+    setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
@@ -63,18 +90,22 @@ function App() {
         body: JSON.stringify({ ...product, action: "update" }),
       });
 
-      if (response.ok) {
-        fetchProducts(); // Recargar lista
-      } else {
-        alert("Error al actualizar producto");
-      }
+      const result = await safeJson(response);
+      console.log("📥 Respuesta al actualizar:", result);
+
+      if (!response.ok) throw new Error("Error al actualizar producto");
+
+      fetchProducts();
     } catch (error) {
-      console.error("Error al actualizar producto:", error);
+      console.error("❌ Error al actualizar producto:", error);
       alert("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteProduct = async (id) => {
+    setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
@@ -82,14 +113,17 @@ function App() {
         body: JSON.stringify({ id, action: "delete" }),
       });
 
-      if (response.ok) {
-        fetchProducts(); // Recargar lista
-      } else {
-        alert("Error al eliminar producto");
-      }
+      const result = await safeJson(response);
+      console.log("📥 Respuesta al eliminar:", result);
+
+      if (!response.ok) throw new Error("Error al eliminar producto");
+
+      fetchProducts();
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
+      console.error("❌ Error al eliminar producto:", error);
       alert("Error al conectar con el servidor");
+    } finally {
+      setLoading(false);
     }
   };
 
