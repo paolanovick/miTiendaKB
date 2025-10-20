@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 // ✅ URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
@@ -15,38 +15,47 @@ const Dashboard = () => {
     image: "",
   });
 
-  // 🔹 Cargar productos al iniciar
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  // 🧩 Función segura para parsear JSON (evita errores)
+  const safeJson = async (response) => {
+    try {
+      return await response.json();
+    } catch {
+      return null;
+    }
+  };
 
   // 🔹 Obtener productos desde n8n (GET)
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(N8N_WEBHOOK_URL, { method: "GET" });
       if (!response.ok) throw new Error("Error al cargar productos");
 
-      const data = await response.json();
+      const data = await safeJson(response);
       const arr = Array.isArray(data) ? data : [data];
 
       const mapped = arr.map((p) => ({
         id: p.id || p._id,
-        name: p.name || p.nombre,
-        description: p.description || p.descripcion,
-        price: p.price || p.precio,
+        name: p.name || p.nombre || "Sin nombre",
+        description: p.description || p.descripcion || "",
+        price: p.price || p.precio || 0,
         image: p.image || "https://placehold.co/300x200?text=Sin+imagen",
       }));
 
       setProducts(mapped);
     } catch (err) {
-      console.error("Error al cargar productos:", err);
+      console.error("❌ Error al cargar productos:", err);
       setError("No se pudieron cargar los productos desde la base de datos");
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // 🔹 Cargar productos al iniciar
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   // 🔹 Agregar producto (POST)
   const addProduct = async (productData) => {
@@ -61,9 +70,12 @@ const Dashboard = () => {
         body: JSON.stringify(productData),
       });
 
-      console.log("📥 Respuesta:", await response.json());
+      const result = await safeJson(response);
+      console.log("📥 Respuesta del servidor:", result);
 
-      await fetchProducts(); // Refresca la lista
+      if (!response.ok) throw new Error("Error en la respuesta del servidor");
+
+      await fetchProducts(); // 🔄 Refresca la lista
     } catch (err) {
       console.error("❌ Error al agregar producto:", err);
       setError("No se pudo agregar el producto");
@@ -96,7 +108,7 @@ const Dashboard = () => {
     console.log("📦 Producto a enviar:", newProduct);
     await addProduct(newProduct);
 
-    // Limpiar formulario
+    // 🧹 Limpiar formulario
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
