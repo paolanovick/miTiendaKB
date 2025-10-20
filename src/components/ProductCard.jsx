@@ -1,14 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
-  const [isHovered, setIsHovered] = React.useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [mensaje, setMensaje] = useState(""); // Para mostrar errores o confirmaciones
+  const [imageUrl, setImageUrl] = useState(product.image);
 
   const handleCardClick = () => {
     navigate(`/producto/${product.id}`);
+  };
+
+  const handleAgregar = async (e) => {
+    e.stopPropagation(); // Evita que se active el click de la tarjeta
+
+    try {
+      // Simulación de llamada al webhook de n8n (puedes reemplazar con tu fetch real)
+      // const response = await fetch('https://tudominio.com/webhook/miWorkflow', { ... })
+      // const data = await response.json();
+
+      // Aquí llamamos a addToCart y asumimos que puede fallar
+      addToCart(product);
+
+      setMensaje("Producto agregado correctamente ✅");
+    } catch (err) {
+      console.error("Error al agregar producto:", err);
+      setMensaje("❌ Error al agregar el producto. Intente nuevamente.");
+    }
+
+    // Limpiar mensaje después de 3 segundos
+    setTimeout(() => setMensaje(""), 3000);
   };
 
   return (
@@ -59,10 +82,7 @@ export default function ProductCard({ product }) {
               </p>
             </div>
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                addToCart(product);
-              }}
+              onClick={handleAgregar}
               className={`px-4 py-1.5 rounded-lg font-bold text-kbcream shadow-lg transition-all duration-300 whitespace-nowrap ${
                 isHovered
                   ? "bg-kbdark hover:bg-kbpurple scale-95"
@@ -72,6 +92,11 @@ export default function ProductCard({ product }) {
               {isHovered ? "✓ Agregar" : "Agregar"}
             </button>
           </div>
+
+          {/* Mensaje de error/confirmación */}
+          {mensaje && (
+            <p className="mt-2 text-sm text-center text-red-500">{mensaje}</p>
+          )}
         </div>
       </div>
 
@@ -87,9 +112,10 @@ export default function ProductCard({ product }) {
       >
         <div className="w-full h-full overflow-hidden shadow-2xl rounded-2xl bg-white">
           <img
-            src={product.image}
+            src={imageUrl}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500"
+            onError={() => setImageUrl("https://placekitten.com/300/200")} // fallback
           />
         </div>
       </div>
