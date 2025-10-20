@@ -10,7 +10,7 @@ import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
 
 // URL de tu n8n en producción (DigitalOcean)
-const API_URL = "https://tu-n8n.com/webhook/products";
+const API_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 function App() {
   const [products, setProducts] = React.useState([]);
