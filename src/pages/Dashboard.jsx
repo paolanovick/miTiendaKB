@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-// URL de tu Webhook en n8n
+// ✅ URL de tu Webhook en n8n
 const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
 
 const Dashboard = () => {
@@ -15,7 +15,7 @@ const Dashboard = () => {
     image: "",
   });
 
-  // Parse seguro de JSON
+  // Función segura para parsear JSON
   const safeJson = async (response) => {
     try {
       return await response.json();
@@ -31,6 +31,8 @@ const Dashboard = () => {
     try {
       const response = await fetch(N8N_WEBHOOK_URL);
       const data = await safeJson(response);
+      console.log("Productos recibidos:", data);
+
       const arr = Array.isArray(data) ? data : data ? [data] : [];
 
       const mapped = arr.map((p) => ({
@@ -41,7 +43,19 @@ const Dashboard = () => {
         image: p.image || p.imagen || "https://placehold.co/300x200",
       }));
 
-      setProducts(mapped);
+      setProducts(
+        mapped.length
+          ? mapped
+          : [
+              {
+                id: "68f3f0a809dc3787e2b06de3",
+                name: "Producto de prueba",
+                description: "Producto de prueba inicial",
+                price: 100,
+                image: "https://via.placeholder.com/300x200",
+              },
+            ]
+      );
     } catch (err) {
       console.error("Error al cargar productos:", err);
       setError("No se pudieron cargar los productos");
@@ -65,7 +79,7 @@ const Dashboard = () => {
         body: JSON.stringify(productData),
       });
       if (!response.ok) throw new Error("Error al agregar");
-      setProducts((prev) => [...prev, productData]); // mantener tarjetas existentes
+      await fetchProducts();
       alert("✅ Producto agregado correctamente");
     } catch (err) {
       console.error("Error al agregar:", err);
@@ -86,11 +100,7 @@ const Dashboard = () => {
         body: JSON.stringify(productData),
       });
       if (!response.ok) throw new Error("Error al actualizar");
-
-      // Actualizar localmente
-      setProducts((prev) =>
-        prev.map((p) => (p.id === productData.id ? productData : p))
-      );
+      await fetchProducts();
       alert("✅ Producto actualizado correctamente");
     } catch (err) {
       console.error("Error al actualizar:", err);
@@ -110,9 +120,7 @@ const Dashboard = () => {
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Error al eliminar");
-
-      // Eliminar localmente
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      await fetchProducts();
       alert("✅ Producto eliminado correctamente");
     } catch (err) {
       console.error("Error al eliminar:", err);
@@ -132,28 +140,23 @@ const Dashboard = () => {
       alert("Por favor completa todos los campos obligatorios");
       return;
     }
-
     const productData = {
-      id: form.id || Date.now().toString(),
+      id: form.id || Date.now(),
       name: form.name,
       description: form.description,
       price: Number(form.price),
       image: form.image || "https://placehold.co/300x200",
     };
-
     if (form.id) {
       await updateProduct(productData);
     } else {
       await addProduct(productData);
     }
-
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
   const handleEdit = (product) => setForm({ ...product });
-
   const handleDelete = (id) => deleteProduct(id);
-
   const resetForm = () =>
     setForm({ id: null, name: "", description: "", price: "", image: "" });
 
