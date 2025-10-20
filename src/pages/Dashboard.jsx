@@ -15,7 +15,7 @@ const Dashboard = () => {
     image: "",
   });
 
-  // 🧩 Función segura para parsear JSON
+  // Función segura para parsear JSON
   const safeJson = async (response) => {
     try {
       return await response.json();
@@ -24,14 +24,19 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Función para cargar productos (GET)
+  // Cargar productos desde n8n
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(N8N_WEBHOOK_URL);
       const data = await safeJson(response);
+      console.log("Productos recibidos:", data); // depuración
+
+      // Asegurar que siempre sea un array
       const arr = Array.isArray(data) ? data : data ? [data] : [];
+
+      // Mapeo de campos
       const mapped = arr.map((p) => ({
         id: p.id || p._id || Date.now().toString(),
         name: p.name || p.nombre || "Sin nombre",
@@ -39,7 +44,21 @@ const Dashboard = () => {
         price: p.price || p.precio || 0,
         image: p.image || p.imagen || "https://placehold.co/300x200",
       }));
-      setProducts(mapped);
+
+      // Si no hay productos, agregar uno de prueba
+      setProducts(
+        mapped.length
+          ? mapped
+          : [
+              {
+                id: "68f3f0a809dc3787e2b06de3",
+                name: "Producto de prueba",
+                description: "Producto de prueba inicial",
+                price: 100,
+                image: "https://via.placeholder.com/300x200",
+              },
+            ]
+      );
     } catch (err) {
       console.error("Error al cargar productos:", err);
       setError("No se pudieron cargar los productos");
@@ -52,7 +71,7 @@ const Dashboard = () => {
     fetchProducts();
   }, [fetchProducts]);
 
-  // 🔹 Agregar producto (POST)
+  // Agregar producto
   const addProduct = async (productData) => {
     setLoading(true);
     setError(null);
@@ -62,10 +81,8 @@ const Dashboard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),
       });
-
       if (!response.ok) throw new Error("Error al agregar");
-
-      await fetchProducts(); // Recargar lista
+      await fetchProducts();
       alert("✅ Producto agregado correctamente");
     } catch (err) {
       console.error("Error al agregar:", err);
@@ -75,7 +92,7 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Actualizar producto (PUT)
+  // Actualizar producto
   const updateProduct = async (productData) => {
     setLoading(true);
     setError(null);
@@ -85,10 +102,8 @@ const Dashboard = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),
       });
-
       if (!response.ok) throw new Error("Error al actualizar");
-
-      await fetchProducts(); // Recargar lista
+      await fetchProducts();
       alert("✅ Producto actualizado correctamente");
     } catch (err) {
       console.error("Error al actualizar:", err);
@@ -98,20 +113,17 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Eliminar producto (DELETE)
+  // Eliminar producto
   const deleteProduct = async (id) => {
     if (!confirm("¿Estás seguro de eliminar este producto?")) return;
-
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(`${N8N_WEBHOOK_URL}?id=${id}`, {
         method: "DELETE",
       });
-
       if (!response.ok) throw new Error("Error al eliminar");
-
-      await fetchProducts(); // Recargar lista
+      await fetchProducts();
       alert("✅ Producto eliminado correctamente");
     } catch (err) {
       console.error("Error al eliminar:", err);
@@ -121,18 +133,16 @@ const Dashboard = () => {
     }
   };
 
-  // 🔹 Manejadores del formulario
+  // Manejadores del formulario
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!form.name || !form.description || !form.price) {
       alert("Por favor completa todos los campos obligatorios");
       return;
     }
-
     const productData = {
       id: form.id || Date.now(),
       name: form.name,
@@ -140,33 +150,22 @@ const Dashboard = () => {
       price: Number(form.price),
       image: form.image || "https://placehold.co/300x200",
     };
-
     if (form.id) {
       await updateProduct(productData);
     } else {
       await addProduct(productData);
     }
-
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
   const handleEdit = (product) => {
-    setForm({
-      id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      image: product.image,
-    });
+    setForm({ ...product });
   };
 
-  const handleDelete = (id) => {
-    deleteProduct(id);
-  };
+  const handleDelete = (id) => deleteProduct(id);
 
-  const resetForm = () => {
+  const resetForm = () =>
     setForm({ id: null, name: "", description: "", price: "", image: "" });
-  };
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
@@ -258,7 +257,6 @@ const Dashboard = () => {
             No hay productos disponibles.
           </p>
         )}
-
         {products.map((p) => (
           <div
             key={p.id}
