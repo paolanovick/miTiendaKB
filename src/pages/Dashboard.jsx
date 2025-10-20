@@ -48,7 +48,7 @@ const Dashboard = () => {
           p.image ||
           p.imagen ||
           (p.product && p.product.image) ||
-          "https://placehold.co/300x200?text=Sin+imagen",
+          "https://placekitten.com/300/200",
       }));
       setProducts(mapped);
     } catch (err) {
@@ -108,7 +108,7 @@ const Dashboard = () => {
       name: form.name,
       description: form.description,
       price: Number(form.price),
-      image: form.image || "https://placehold.co/300x200?text=Sin+imagen",
+      image: form.image || "https://placekitten.com/300/200",
     };
 
     await addProduct(newProduct);
