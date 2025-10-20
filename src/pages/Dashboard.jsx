@@ -41,7 +41,7 @@ const Dashboard = () => {
 
       setProducts(mapped);
     } catch (err) {
-      console.error(err);
+      console.error("Error al cargar productos:", err);
       setError("No se pudieron cargar los productos desde la base de datos");
     } finally {
       setLoading(false);
@@ -53,14 +53,19 @@ const Dashboard = () => {
     setLoading(true);
     setError(null);
     try {
-      await fetch(N8N_WEBHOOK_URL, {
+      console.log("📤 Enviando producto:", productData);
+
+      const response = await fetch(N8N_WEBHOOK_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(productData),
       });
+
+      console.log("📥 Respuesta:", await response.json());
+
       await fetchProducts(); // Refresca la lista
     } catch (err) {
-      console.error(err);
+      console.error("❌ Error al agregar producto:", err);
       setError("No se pudo agregar el producto");
     } finally {
       setLoading(false);
@@ -73,7 +78,12 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price) return;
+    console.log("🚀 Formulario enviado");
+
+    if (!form.name || !form.description || !form.price) {
+      alert("Por favor completa todos los campos obligatorios");
+      return;
+    }
 
     const newProduct = {
       id: Date.now().toString(),
@@ -83,7 +93,10 @@ const Dashboard = () => {
       image: form.image || "https://via.placeholder.com/300x200",
     };
 
+    console.log("📦 Producto a enviar:", newProduct);
     await addProduct(newProduct);
+
+    // Limpiar formulario
     setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
