@@ -9,9 +9,7 @@ import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
 
-// URLs de tu n8n en producción (DigitalOcean)
-const API_BASE = "https://n8n.triptest.com.ar/webhook";
-const API_PRODUCTS = `${API_BASE}/miTienda`;
+const API_PRODUCTS = "/api/products";
 
 function App() {
   const [products, setProducts] = useState([]);
