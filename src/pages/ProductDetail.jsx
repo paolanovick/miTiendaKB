@@ -6,7 +6,9 @@ const ProductDetail = ({ products }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const product = products.find((p) => p.id === Number(id));
+
+  // ✅ Comparar como string
+  const product = products.find((p) => p.id === id);
 
   if (!product) {
     return (
@@ -41,7 +43,7 @@ const ProductDetail = ({ products }) => {
         </button>
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-          {/* Imagen - columna más pequeña */}
+          {/* Imagen */}
           <div className="lg:col-span-2 flex items-center justify-center">
             <div className="bg-white rounded-xl p-6 shadow-lg w-full">
               <img
@@ -52,7 +54,7 @@ const ProductDetail = ({ products }) => {
             </div>
           </div>
 
-          {/* Información del producto */}
+          {/* Información */}
           <div className="lg:col-span-3">
             <div className="mb-6">
               <p className="text-sm text-gray-500 mb-1">SKU: {product.sku}</p>
@@ -121,7 +123,7 @@ const ProductDetail = ({ products }) => {
           </div>
         </div>
 
-        {/* Reseñas - ancho completo abajo */}
+        {/* Reseñas */}
         {reviews.length > 0 && (
           <div className="mt-12">
             <h3 className="text-2xl font-bold mb-6">Reseñas de clientes</h3>
