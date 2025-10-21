@@ -1,15 +1,7 @@
 import React, { useState, useEffect } from "react";
 
-// ✅ URL de tu Webhook en n8n
-const N8N_WEBHOOK_URL = "https://n8n.triptest.com.ar/webhook/miTienda";
-
-const Dashboard = ({
-  products: propsProducts,
-  onAddProduct,
-  onUpdateProduct,
-  onDeleteProduct,
-}) => {
-  const [products, setProducts] = useState(propsProducts || []);
+const Dashboard = () => {
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
@@ -20,128 +12,80 @@ const Dashboard = ({
     image: "",
   });
 
-  // Actualizar productos cuando cambien las props
+  // 🔹 Cargar productos
+  const fetchProducts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/products");
+      const data = await response.json();
+
+      const mapped = data.map((p) => ({
+        id: p.id || p._id,
+        name: p.name || p.nombre,
+        description: p.description || p.descripcion,
+        price: p.price || p.precio,
+        image: p.image || "https://placekitten.com/300/200",
+      }));
+
+      setProducts(mapped);
+    } catch (err) {
+      console.error("❌ Error al cargar productos:", err);
+      setError("No se pudieron cargar los productos");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (propsProducts) {
-      setProducts(propsProducts);
-    }
-  }, [propsProducts]);
+    fetchProducts();
+  }, []);
 
-  // 🧩 Función segura para parsear JSON (no se usa si vienen props)
- 
-
-  // 🔹 Agregar producto (CREATE)
-  const addProduct = async (productData) => {
-    if (onAddProduct) {
-      // Si recibe la función por props, usarla
-      await onAddProduct(productData);
-    } else {
-      // Fallback: hacer fetch directo
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...productData, action: "create" }),
-        });
-
-        if (!response.ok) throw new Error("Error al agregar");
-        setProducts((prev) => [...prev, productData]);
-      } catch (err) {
-        console.error("❌ Error al agregar:", err);
-        setError("No se pudo agregar el producto");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  // 🔹 Actualizar producto (UPDATE)
-  const updateProduct = async (productData) => {
-    if (onUpdateProduct) {
-      await onUpdateProduct(productData);
-    } else {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...productData, action: "update" }),
-        });
-
-        if (!response.ok) throw new Error("Error al actualizar");
-        setProducts((prev) =>
-          prev.map((p) => (p.id === productData.id ? productData : p))
-        );
-      } catch (err) {
-        console.error("❌ Error al actualizar:", err);
-        setError("No se pudo actualizar el producto");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  // 🔹 Eliminar producto (DELETE)
-  const deleteProduct = async (id) => {
-    if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
-
-    if (onDeleteProduct) {
-      await onDeleteProduct(id);
-    } else {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(N8N_WEBHOOK_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id, action: "delete" }),
-        });
-
-        if (!response.ok) throw new Error("Error al eliminar");
-        setProducts((prev) => prev.filter((p) => p.id !== id));
-      } catch (err) {
-        console.error("❌ Error al eliminar:", err);
-        setError("No se pudo eliminar el producto");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
-  // 🔹 Manejadores del formulario
+  // 🔹 Manejo de formulario
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!form.name || !form.description || !form.price) {
       alert("Por favor completa todos los campos obligatorios");
       return;
     }
 
-    const productData = {
-      id: form.id || Date.now().toString(),
-      name: form.name,
-      description: form.description,
-      price: Number(form.price),
-      image: form.image || "https://via.placeholder.com/300x200",
-    };
+    setLoading(true);
+    setError(null);
 
-    if (form.id) {
-      await updateProduct(productData);
-    } else {
-      await addProduct(productData);
+    try {
+      const method = form.id ? "PUT" : "POST";
+      const body = {
+        id: form.id,
+        name: form.name,
+        description: form.description,
+        price: Number(form.price),
+        image: form.image || "https://placekitten.com/300/200",
+      };
+
+      const response = await fetch("/api/products", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      const result = await response.json();
+      if (!response.ok)
+        throw new Error(result.error || "Error al guardar producto");
+
+      await fetchProducts();
+      setForm({ id: null, name: "", description: "", price: "", image: "" });
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo guardar el producto");
+    } finally {
+      setLoading(false);
     }
-
-    // Limpiar formulario
-    setForm({ id: null, name: "", description: "", price: "", image: "" });
   };
 
-  // 🔹 Cargar producto para editar
+  // 🔹 Editar producto
   const handleEdit = (product) => {
     setForm({
       id: product.id,
@@ -153,13 +97,37 @@ const Dashboard = ({
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // 🔹 Eliminar producto
+  const handleDelete = async (id) => {
+    if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/products", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Error al eliminar");
+
+      await fetchProducts();
+    } catch (err) {
+      console.error(err);
+      setError("No se pudo eliminar el producto");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        🛍️ Administrar Productos
+        🛍️ Dashboard de Productos
       </h2>
 
-      {/* Mensajes */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
@@ -171,7 +139,6 @@ const Dashboard = ({
         </div>
       )}
 
-      {/* Formulario */}
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-lg shadow"
@@ -183,8 +150,8 @@ const Dashboard = ({
           value={form.name}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          required
           disabled={loading}
+          required
         />
         <input
           type="text"
@@ -193,8 +160,8 @@ const Dashboard = ({
           value={form.description}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          required
           disabled={loading}
+          required
         />
         <input
           type="number"
@@ -203,8 +170,8 @@ const Dashboard = ({
           value={form.price}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          required
           disabled={loading}
+          required
         />
         <input
           type="text"
@@ -224,7 +191,6 @@ const Dashboard = ({
         </button>
       </form>
 
-      {/* Lista de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.length === 0 && !loading && (
           <p className="text-gray-600 col-span-full text-center">
@@ -248,18 +214,17 @@ const Dashboard = ({
               ${p.price}
             </p>
 
-            {/* Botones de acción */}
             <div className="flex gap-2 mt-auto">
               <button
                 onClick={() => handleEdit(p)}
-                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-400 text-sm"
+                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 transition-colors text-sm"
                 disabled={loading}
               >
                 ✏️ Editar
               </button>
               <button
-                onClick={() => deleteProduct(p.id)}
-                className="flex-1 bg-red-500 text-white py-2 px-3 rounded hover:bg-red-600 transition-colors disabled:bg-gray-400 text-sm"
+                onClick={() => handleDelete(p.id)}
+                className="flex-1 bg-red-500 text-white py-2 px-3 rounded hover:bg-red-600 transition-colors text-sm"
                 disabled={loading}
               >
                 🗑️ Eliminar

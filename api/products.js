@@ -1,7 +1,7 @@
 import { MongoClient, ObjectId } from "mongodb";
 
 const uri =
-  "mongodb+srv://adminTienda:37Paola37@mitienda.qgltriw.mongodb.net/miTienda?retryWrites=true&w=majority&appName=miTienda";
+  "mongodb+srv://adminTienda:37Paola37@mitienda.qgltriw.mongodb.net/miTienda?retryWrites=true&w=majority";
 
 let client;
 let db;
@@ -11,7 +11,6 @@ async function connectDB() {
     client = new MongoClient(uri);
     await client.connect();
     db = client.db("miTienda");
-    console.log("✅ Conectado a MongoDB");
   }
   return db;
 }
