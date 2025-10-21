@@ -57,14 +57,14 @@ function App() {
     fetchProducts();
   }, [fetchProducts]);
 
-  // 🔹 Funciones para CRUD de productos
+  // 🔹 AGREGAR producto - Usa POST (REST estándar)
   const handleAddProduct = async (product) => {
     setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...product, action: "create" }), // ← cambia "add" por "create"
+        body: JSON.stringify(product), // ✅ Sin action
       });
 
       const result = await safeJson(response);
@@ -81,13 +81,14 @@ function App() {
     }
   };
 
+  // 🔹 ACTUALIZAR producto - Usa PUT (REST estándar)
   const handleUpdateProduct = async (product) => {
     setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
-        method: "POST",
+        method: "PUT", // ✅ Cambio a PUT
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...product, action: "update" }),
+        body: JSON.stringify(product), // ✅ Sin action
       });
 
       const result = await safeJson(response);
@@ -104,13 +105,14 @@ function App() {
     }
   };
 
+  // 🔹 ELIMINAR producto - Usa DELETE (REST estándar)
   const handleDeleteProduct = async (id) => {
     setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
-        method: "POST",
+        method: "DELETE", // ✅ Cambio a DELETE
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, action: "delete" }),
+        body: JSON.stringify({ id }), // ✅ Sin action, solo id
       });
 
       const result = await safeJson(response);
