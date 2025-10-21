@@ -3,16 +3,17 @@ import React, { useState, useEffect } from "react";
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     id: null,
-    name: "",
-    description: "",
-    price: "",
+    nombre: "",
+    descripcion: "",
+    precio: "",
     image: "",
   });
 
-  // 🔹 Cargar productos
+  // 🔹 Cargar productos desde API
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -20,18 +21,19 @@ const Dashboard = () => {
       const response = await fetch("/api/products");
       const data = await response.json();
 
-      const mapped = data.map((p) => ({
-        id: p.id || p._id,
-        name: p.name || p.nombre,
-        description: p.description || p.descripcion,
-        price: p.price || p.precio,
-        image: p.image || "https://placekitten.com/300/200",
+      const mappedProducts = data.map((p) => ({
+        id: p._id,
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        precio: p.precio,
+        image: p.image,
       }));
 
-      setProducts(mapped);
+      setProducts(mappedProducts);
     } catch (err) {
       console.error("❌ Error al cargar productos:", err);
       setError("No se pudieron cargar los productos");
+      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -41,14 +43,16 @@ const Dashboard = () => {
     fetchProducts();
   }, []);
 
-  // 🔹 Manejo de formulario
+  // 🔹 Manejo del formulario
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.description || !form.price) {
-      alert("Por favor completa todos los campos obligatorios");
+
+    if (!form.nombre || !form.descripcion || !form.precio) {
+      setError("Por favor completa todos los campos obligatorios");
+      setTimeout(() => setError(null), 3000);
       return;
     }
 
@@ -57,13 +61,20 @@ const Dashboard = () => {
 
     try {
       const method = form.id ? "PUT" : "POST";
-      const body = {
-        id: form.id,
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        image: form.image || "https://placekitten.com/300/200",
-      };
+      const body = form.id
+        ? {
+            id: form.id,
+            nombre: form.nombre,
+            descripcion: form.descripcion,
+            precio: Number(form.precio),
+            image: form.image,
+          }
+        : {
+            nombre: form.nombre,
+            descripcion: form.descripcion,
+            precio: Number(form.precio),
+            image: form.image,
+          };
 
       const response = await fetch("/api/products", {
         method,
@@ -72,14 +83,23 @@ const Dashboard = () => {
       });
 
       const result = await response.json();
+
       if (!response.ok)
         throw new Error(result.error || "Error al guardar producto");
 
       await fetchProducts();
-      setForm({ id: null, name: "", description: "", price: "", image: "" });
+      setForm({ id: null, nombre: "", descripcion: "", precio: "", image: "" });
+
+      setMensaje(
+        form.id
+          ? "Producto actualizado con éxito ✅"
+          : "Producto agregado con éxito ✅"
+      );
+      setTimeout(() => setMensaje(""), 3000);
     } catch (err) {
       console.error(err);
       setError("No se pudo guardar el producto");
+      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -89,9 +109,9 @@ const Dashboard = () => {
   const handleEdit = (product) => {
     setForm({
       id: product.id,
-      name: product.name,
-      description: product.description,
-      price: product.price,
+      nombre: product.nombre,
+      descripcion: product.descripcion,
+      precio: product.precio,
       image: product.image,
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -103,6 +123,7 @@ const Dashboard = () => {
 
     setLoading(true);
     setError(null);
+
     try {
       const response = await fetch("/api/products", {
         method: "DELETE",
@@ -111,12 +132,17 @@ const Dashboard = () => {
       });
 
       const result = await response.json();
+
       if (!response.ok) throw new Error(result.error || "Error al eliminar");
 
       await fetchProducts();
+
+      setMensaje("Producto eliminado ✅");
+      setTimeout(() => setMensaje(""), 3000);
     } catch (err) {
       console.error(err);
       setError("No se pudo eliminar el producto");
+      setTimeout(() => setError(null), 3000);
     } finally {
       setLoading(false);
     }
@@ -125,12 +151,18 @@ const Dashboard = () => {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        🛍️ Dashboard de Productos
+        🛍️ Administrar Productos
       </h2>
 
+      {/* Mensajes */}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
+        </div>
+      )}
+      {mensaje && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+          {mensaje}
         </div>
       )}
       {loading && (
@@ -139,39 +171,40 @@ const Dashboard = () => {
         </div>
       )}
 
+      {/* Formulario */}
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-lg shadow"
       >
         <input
           type="text"
-          name="name"
+          name="nombre"
           placeholder="Nombre del producto"
-          value={form.name}
+          value={form.nombre}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          disabled={loading}
           required
+          disabled={loading}
         />
         <input
           type="text"
-          name="description"
+          name="descripcion"
           placeholder="Descripción"
-          value={form.description}
+          value={form.descripcion}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          disabled={loading}
           required
+          disabled={loading}
         />
         <input
           type="number"
-          name="price"
+          name="precio"
           placeholder="Precio"
-          value={form.price}
+          value={form.precio}
           onChange={handleChange}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
-          disabled={loading}
           required
+          disabled={loading}
         />
         <input
           type="text"
@@ -191,6 +224,7 @@ const Dashboard = () => {
         </button>
       </form>
 
+      {/* Lista de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.length === 0 && !loading && (
           <p className="text-gray-600 col-span-full text-center">
@@ -205,13 +239,13 @@ const Dashboard = () => {
           >
             <img
               src={p.image}
-              alt={p.name}
+              alt={p.nombre}
               className="h-40 w-full object-cover rounded mb-3"
             />
-            <h3 className="font-bold text-lg text-gray-800">{p.name}</h3>
-            <p className="text-gray-500 mb-2 text-sm">{p.description}</p>
+            <h3 className="font-bold text-lg text-gray-800">{p.nombre}</h3>
+            <p className="text-gray-500 mb-2 text-sm">{p.descripcion}</p>
             <p className="text-green-600 font-semibold text-lg mb-3">
-              ${p.price}
+              ${p.precio}
             </p>
 
             <div className="flex gap-2 mt-auto">
