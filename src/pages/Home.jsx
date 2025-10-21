@@ -14,7 +14,7 @@ const Home = ({ products }) => {
       >
         <div className="flex items-center justify-center h-full bg-black/20">
           <h1 className="text-white text-5xl font-bold text-center">
-            Colección Exclusiva
+            Colección Exclusiva!
           </h1>
         </div>
       </div>
