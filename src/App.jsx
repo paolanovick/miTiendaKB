@@ -35,19 +35,33 @@ function App() {
       if (!response.ok) throw new Error("Error al cargar productos");
 
       const data = await safeJson(response);
+      console.log("📥 Datos recibidos del servidor:", data);
+
+      // Si data es null o undefined, usar array vacío
+      if (!data) {
+        console.log("⚠️ No hay datos del servidor");
+        setProducts([]);
+        return;
+      }
+
       const arr = Array.isArray(data) ? data : [data];
 
-      const mapped = arr.map((p) => ({
-        id: p.id || p._id,
-        name: p.name || p.nombre || "Sin nombre",
-        description: p.description || p.descripcion || "",
-        price: p.price || p.precio || 0,
-        image: p.image || "https://placekitten.com/300/200",
-      }));
+      // Filtrar elementos null o undefined antes de mapear
+      const mapped = arr
+        .filter((p) => p !== null && p !== undefined)
+        .map((p) => ({
+          id: p.id || p._id,
+          name: p.name || p.nombre || "Sin nombre",
+          description: p.description || p.descripcion || "",
+          price: p.price || p.precio || 0,
+          image: p.image || "https://placekitten.com/300/200",
+        }));
 
+      console.log("✅ Productos mapeados:", mapped);
       setProducts(mapped);
     } catch (error) {
       console.error("❌ Error al cargar productos:", error);
+      setProducts([]); // Asegurar que products sea array vacío en caso de error
     } finally {
       setLoading(false);
     }
@@ -64,7 +78,7 @@ function App() {
       const response = await fetch(API_PRODUCTS, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product), // ✅ Sin action
+        body: JSON.stringify(product),
       });
 
       const result = await safeJson(response);
@@ -72,10 +86,11 @@ function App() {
 
       if (!response.ok) throw new Error("Error al agregar producto");
 
+      alert("✅ Producto agregado exitosamente");
       fetchProducts();
     } catch (error) {
       console.error("❌ Error al agregar producto:", error);
-      alert("Error al conectar con el servidor");
+      alert("❌ Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }
@@ -86,9 +101,9 @@ function App() {
     setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
-        method: "PUT", // ✅ Cambio a PUT
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product), // ✅ Sin action
+        body: JSON.stringify(product),
       });
 
       const result = await safeJson(response);
@@ -96,10 +111,11 @@ function App() {
 
       if (!response.ok) throw new Error("Error al actualizar producto");
 
+      alert("✅ Producto actualizado exitosamente");
       fetchProducts();
     } catch (error) {
       console.error("❌ Error al actualizar producto:", error);
-      alert("Error al conectar con el servidor");
+      alert("❌ Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }
@@ -107,12 +123,16 @@ function App() {
 
   // 🔹 ELIMINAR producto - Usa DELETE (REST estándar)
   const handleDeleteProduct = async (id) => {
+    if (!window.confirm("¿Estás seguro de eliminar este producto?")) {
+      return;
+    }
+
     setLoading(true);
     try {
       const response = await fetch(API_PRODUCTS, {
-        method: "DELETE", // ✅ Cambio a DELETE
+        method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }), // ✅ Sin action, solo id
+        body: JSON.stringify({ id }),
       });
 
       const result = await safeJson(response);
@@ -120,10 +140,11 @@ function App() {
 
       if (!response.ok) throw new Error("Error al eliminar producto");
 
+      alert("✅ Producto eliminado exitosamente");
       fetchProducts();
     } catch (error) {
       console.error("❌ Error al eliminar producto:", error);
-      alert("Error al conectar con el servidor");
+      alert("❌ Error al conectar con el servidor");
     } finally {
       setLoading(false);
     }
