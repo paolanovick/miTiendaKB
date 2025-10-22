@@ -59,11 +59,11 @@ function App() {
 
       console.log("✅ Productos mapeados:", mapped);
       console.log(
-        "🎒 Mochilas:",
+        
         mapped.filter((p) => p.category === "mochilas").length
       );
       console.log(
-        "👜 Bolsos:",
+       
         mapped.filter((p) => p.category === "bolsos").length
       );
 
