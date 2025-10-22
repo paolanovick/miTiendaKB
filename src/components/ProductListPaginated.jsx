@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import ProductCard from "./ProductCard";
+import { useCart } from "../hooks/useCart";
 
 const ProductListPaginated = ({ products }) => {
+  const { addToCart } = useCart();
   const [visibleCount, setVisibleCount] = useState(4);
 
   const visibleProducts = products.slice(0, visibleCount);
@@ -13,10 +15,14 @@ const ProductListPaginated = ({ products }) => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-12 py-6 pt-40">
-      {/* Grid responsivo - siempre 1 fila */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 mb-12">
+      {/* Grid responsivo con espaciado corregido */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-32 mb-12">
         {visibleProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard
+            key={product.id}
+            product={product}
+            onAddToCart={addToCart}
+          />
         ))}
       </div>
 
