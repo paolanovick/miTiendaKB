@@ -52,7 +52,7 @@ function App() {
           name: p.name || p.nombre || "Sin nombre",
           description: p.description || p.descripcion || "",
           price: p.price || p.precio || 0,
-          image: p.image || "https://placekitten.com/300/200",
+          image: p.image || p.imagen || "https://placekitten.com/300/200",
         }));
 
       console.log("✅ Productos mapeados:", mapped);
