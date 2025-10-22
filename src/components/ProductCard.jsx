@@ -26,24 +26,27 @@ export default function ProductCard({ product }) {
 
   return (
     <div
-      className="relative group w-full sm:w-72 md:w-80 lg:w-96 mx-auto my-12 cursor-pointer"
+      className="
+        relative group 
+        w-full sm:w-72 md:w-80 lg:w-96 
+        mx-auto 
+        my-20 sm:my-24 md:my-28 lg:my-32 
+        cursor-pointer
+      "
       onClick={handleCardClick}
     >
       {/* Contenedor principal */}
       <div className="relative flex flex-col items-center">
-        {/* Imagen flotante responsive */}
+        {/* Imagen flotante */}
         <div
           className="
-          absolute 
-          -top-16 
-          w-36 h-36 
-          sm:-top-20 sm:w-44 sm:h-44 
-          md:-top-24 md:w-48 md:h-48 
-          lg:-top-28 lg:w-56 lg:h-56
-          rounded-2xl overflow-hidden shadow-lg 
-          transition-transform duration-500 
-          group-hover:scale-105
-        "
+            absolute 
+            -top-16 sm:-top-20 md:-top-24 lg:-top-28 
+            w-36 h-36 sm:w-44 sm:h-44 md:w-48 md:h-48 lg:w-56 lg:h-56 
+            rounded-2xl overflow-hidden shadow-lg 
+            transition-transform duration-500 
+            group-hover:scale-105 bg-white
+          "
         >
           <img
             src={imageUrl}
@@ -53,19 +56,19 @@ export default function ProductCard({ product }) {
           />
         </div>
 
-        {/* Tarjeta inferior */}
+        {/* Tarjeta */}
         <div
           className="
-          bg-white 
-          w-full 
-          rounded-2xl 
-          shadow-md 
-          pt-28 sm:pt-32 md:pt-36 lg:pt-40 
-          pb-5 px-4 
-          flex flex-col items-center text-center 
-          transition-all duration-300 
-          hover:shadow-xl
-        "
+            bg-white 
+            w-full 
+            rounded-2xl 
+            shadow-md 
+            pt-28 sm:pt-32 md:pt-36 lg:pt-40 
+            pb-5 px-4 
+            flex flex-col items-center text-center 
+            transition-all duration-300 
+            hover:shadow-xl
+          "
         >
           <h3 className="text-lg font-semibold text-gray-800 mt-2 truncate">
             {product.name}
