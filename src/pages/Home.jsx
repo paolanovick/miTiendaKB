@@ -69,19 +69,7 @@ const Home = ({ products }) => {
       )}
       {/* 🔹 Carrusel secundario */}
       <InfiniteCarousel3 />
-      {/* ✨ Sección Accesorios */}
-      {accesorios.length > 0 && (
-        <>
-          <Separador />
-          <section className="py-16 bg-gray-50">
-            <ProductList
-              products={accesorios}
-              title="🕶️ Accesorios"
-              paginated={true}
-            />
-          </section>
-        </>
-      )}
+     
     </>
   );
 };
