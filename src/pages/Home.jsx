@@ -74,15 +74,10 @@ const Home = ({ products, onAddToCart }) => {
         </section>
       )}
 
-      {/* 🔹 Carrusel terciario */}
-      <InfiniteCarousel3 />
-
       {/* 🎥 Video de YouTube */}
       <section className="py-16 bg-gray-50 flex justify-center">
-        <div className="video-responsive w-full max-w-4xl">
+        <div className="video-responsive w-full">
           <iframe
-            width="853"
-            height="480"
             src="https://www.youtube.com/embed/OghBQ0vvhW8"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -92,6 +87,8 @@ const Home = ({ products, onAddToCart }) => {
         </div>
       </section>
 
+      {/* 🔹 Carrusel terciario */}
+      <InfiniteCarousel3 />
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
         <section className="py-16 bg-gray-50">
