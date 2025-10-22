@@ -45,7 +45,7 @@ const Home = ({ products }) => {
 
       {/* 🎒 Sección Mochilas */}
       {mochilas.length > 0 && (
-        <section className="py-16 bg-gray-50 opacity-0 animate-fadeIn">
+        <section className="py-16 bg-gray-50">
           <ProductList
             products={mochilas}
             title="🎒 Mochilas"
@@ -62,7 +62,7 @@ const Home = ({ products }) => {
 
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
-        <section className="py-16 bg-white opacity-0 animate-fadeIn">
+        <section className="py-16 bg-white">
           <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
         </section>
       )}
@@ -71,7 +71,7 @@ const Home = ({ products }) => {
       {accesorios.length > 0 && (
         <>
           <Separador />
-          <section className="py-16 bg-gray-50 opacity-0 animate-fadeIn">
+          <section className="py-16 bg-gray-50">
             <ProductList
               products={accesorios}
               title="🕶️ Accesorios"
