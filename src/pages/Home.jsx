@@ -1,6 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
-
 import ProductList from "../components/ProductList";
 import InfiniteCarousel from "../components/InfiniteCarousel";
 import InfiniteCarousel2 from "../components/InfiniteCarousel2";
@@ -47,19 +45,13 @@ const Home = ({ products }) => {
 
       {/* 🎒 Sección Mochilas */}
       {mochilas.length > 0 && (
-        <motion.section
-          className="py-16 bg-gray-50"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-        >
+        <section className="py-16 bg-gray-50 opacity-0 animate-fadeIn">
           <ProductList
             products={mochilas}
             title="🎒 Mochilas"
             paginated={true}
-            animateCards={true}
           />
-        </motion.section>
+        </section>
       )}
 
       {/* Separador decorativo */}
@@ -70,38 +62,22 @@ const Home = ({ products }) => {
 
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
-        <motion.section
-          className="py-16 bg-white"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.1 }}
-        >
-          <ProductList
-            products={bolsos}
-            title="👜 Bolsos"
-            paginated={false}
-            animateCards={true}
-          />
-        </motion.section>
+        <section className="py-16 bg-white opacity-0 animate-fadeIn">
+          <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
+        </section>
       )}
 
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
         <>
           <Separador />
-          <motion.section
-            className="py-16 bg-gray-50"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-          >
+          <section className="py-16 bg-gray-50 opacity-0 animate-fadeIn">
             <ProductList
               products={accesorios}
               title="🕶️ Accesorios"
               paginated={true}
-              animateCards={true}
             />
-          </motion.section>
+          </section>
         </>
       )}
     </>
