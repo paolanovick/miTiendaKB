@@ -2,22 +2,20 @@ import React from "react";
 
 const ProductCard = ({ product, onAddToCart }) => {
   return (
-    <div className="relative flex flex-col bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
-      {/* Imagen sobresaliente */}
-      <div className="relative h-48">
-        <img
-          src={product.image || "https://placekitten.com/300/300"}
-          alt={product.nombre || product.name}
-          className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-40 h-40 object-cover rounded-full border-4 border-white shadow-md"
-        />
-      </div>
+    <div className="flex flex-col bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
+      {/* Imagen cuadrada */}
+      <img
+        src={product.image || "https://placekitten.com/300/300"}
+        alt={product.nombre || product.name}
+        className="w-full h-48 object-cover"
+      />
 
       {/* Cajón inferior */}
-      <div className="mt-20 px-6 pb-6 flex flex-col items-center text-center">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">
+      <div className="px-4 py-4 flex flex-col items-center text-center">
+        <h3 className="text-lg font-semibold text-gray-800 mb-1">
           {product.nombre || product.name}
         </h3>
-        <p className="text-gray-500 text-sm mb-3">
+        <p className="text-gray-500 text-sm mb-2">
           {product.descripcion || product.description}
         </p>
         <p className="text-green-600 font-bold text-lg mb-3">
