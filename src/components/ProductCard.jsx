@@ -1,65 +1,95 @@
-import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ProductCard = ({ product, onAddToCart }) => {
-  const [quantity, setQuantity] = useState(1);
+  const [imageUrl, setImageUrl] = useState(
+    product.image || "https://placekitten.com/300/200"
+  );
   const navigate = useNavigate();
 
-  const handleAdd = () => {
-    onAddToCart({ ...product, quantity });
+  const handleCardClick = () => {
+    navigate(`/producto/${product.id || product._id}`);
+  };
+
+  const handleAddToCart = (e) => {
+    e.stopPropagation(); // Evita que abra el detalle
+    onAddToCart(product);
   };
 
   return (
-    <div
-      className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col cursor-pointer"
-      onClick={() => navigate(`/producto/${product.id || product._id}`)}
-    >
-      {/* Imagen */}
-      <div className="relative h-48 flex justify-center items-start -mt-12">
+    <div className="relative group cursor-pointer" onClick={handleCardClick}>
+      {/* Imagen flotante - mitad afuera, mitad dentro */}
+      <div
+        className="
+          absolute 
+          -top-16 sm:-top-20 
+          left-1/2 -translate-x-1/2
+          w-40 h-40 sm:w-48 sm:h-48 
+          rounded-2xl overflow-hidden shadow-xl 
+          transition-transform duration-500 
+          group-hover:scale-110 
+          group-hover:-rotate-2
+          bg-white
+          z-10
+        "
+      >
         <img
-          src={product.image || "https://placekitten.com/300/300"}
+          src={imageUrl}
           alt={product.name || product.nombre}
-          className="h-48 w-48 object-contain z-10"
+          className="w-full h-full object-cover"
+          onError={() => setImageUrl("https://placekitten.com/300/200")}
         />
       </div>
 
-      {/* Cajón inferior */}
+      {/* Tarjeta de información */}
       <div
-        className="bg-yellow-400 p-4 flex flex-col items-center text-center mt-[-1rem]"
-        onClick={(e) => e.stopPropagation()} // evita abrir detalles al presionar botones
+        className="
+          bg-white 
+          w-full 
+          rounded-2xl 
+          shadow-md 
+          pt-28 sm:pt-32 
+          pb-6 px-5 
+          flex flex-col items-center text-center 
+          transition-all duration-300 
+          hover:shadow-2xl
+          relative
+        "
       >
-        <h3 className="font-bold text-lg text-white mb-2">
+        {/* Título */}
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
           {product.name || product.nombre}
         </h3>
-        <p className="text-white text-sm mb-2 line-clamp-2">
-          {product.description || product.descripcion || "Descripción corta"}
-        </p>
-        <p className="font-bold text-xl text-white mb-3">
-          ${product.price || product.precio}
+
+        {/* Categoría */}
+        <p className="text-sm text-gray-500 mb-4">
+          {product.category || product.categoria || "Sin categoría"}
         </p>
 
-        {/* Controles */}
-        <div className="flex items-center gap-2 mb-2">
-          <button
-            className="bg-white text-yellow-400 px-2 rounded"
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-          >
-            -
-          </button>
-          <span className="text-white font-semibold">{quantity}</span>
-          <button
-            className="bg-white text-yellow-400 px-2 rounded"
-            onClick={() => setQuantity((q) => q + 1)}
-          >
-            +
-          </button>
+        {/* Precio */}
+        <div className="mb-4">
+          <span className="text-2xl font-bold text-green-600">
+            $ {(product.price || product.precio)?.toLocaleString()}
+          </span>
         </div>
 
+        {/* Botón */}
         <button
-          onClick={handleAdd}
-          className="bg-white text-yellow-400 font-bold px-4 py-2 rounded shadow hover:bg-yellow-100 transition"
+          onClick={handleAddToCart}
+          className="
+            w-full 
+            bg-gradient-to-r from-blue-500 to-purple-600 
+            text-white 
+            font-semibold 
+            py-3 
+            rounded-xl 
+            hover:from-blue-600 hover:to-purple-700 
+            transition-all duration-300 
+            shadow-md hover:shadow-lg
+            transform hover:-translate-y-0.5
+          "
         >
-          ADD TO CART
+          Agregar al carrito
         </button>
       </div>
     </div>
