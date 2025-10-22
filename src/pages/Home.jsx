@@ -5,7 +5,7 @@ import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import Separador from "../components/Separador";
 
-const Home = ({ products }) => {
+const Home = ({ products, onAddToCart }) => {
   // 🔹 Filtrar productos por categoría
   const mochilas = products.filter(
     (p) =>
@@ -51,6 +51,7 @@ const Home = ({ products }) => {
             products={mochilas}
             title="🎒 Mochilas"
             paginated={true}
+            onAddToCart={onAddToCart}
           />
         </section>
       )}
@@ -64,12 +65,44 @@ const Home = ({ products }) => {
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
         <section className="py-16 bg-white">
-          <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
+          <ProductList
+            products={bolsos}
+            title="👜 Bolsos"
+            paginated={false}
+            onAddToCart={onAddToCart}
+          />
         </section>
       )}
-      {/* 🔹 Carrusel secundario */}
+
+      {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
-     
+
+      {/* 🎥 Video de YouTube */}
+      <section className="py-16 bg-gray-50 flex justify-center">
+        <div className="video-responsive w-full max-w-4xl">
+          <iframe
+            width="853"
+            height="480"
+            src="https://www.youtube.com/embed/OghBQ0vvhW8"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title="Video de YouTube"
+          />
+        </div>
+      </section>
+
+      {/* ✨ Sección Accesorios */}
+      {accesorios.length > 0 && (
+        <section className="py-16 bg-gray-50">
+          <ProductList
+            products={accesorios}
+            title="🕶️ Accesorios"
+            paginated={true}
+            onAddToCart={onAddToCart}
+          />
+        </section>
+      )}
     </>
   );
 };

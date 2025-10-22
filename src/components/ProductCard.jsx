@@ -1,34 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 
 const ProductCard = ({ product, onAddToCart }) => {
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAdd = () => {
+    onAddToCart({ ...product, quantity });
+  };
+
   return (
-    <div className="flex flex-col bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition">
-      {/* Imagen cuadrada */}
-      <img
-        src={product.image || "https://placekitten.com/300/300"}
-        alt={product.nombre || product.name}
-        className="w-full h-48 object-cover"
-      />
+    <div className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col">
+      {/* Imagen sobresaliente */}
+      <div className="relative h-48 flex justify-center items-start -mt-12">
+        <img
+          src={product.image || "https://placekitten.com/300/300"}
+          alt={product.name || product.nombre}
+          className="h-48 w-48 object-contain z-10"
+        />
+      </div>
 
       {/* Cajón inferior */}
-      <div className="px-4 py-4 flex flex-col items-center text-center">
-        <h3 className="text-lg font-semibold text-gray-800 mb-1">
-          {product.nombre || product.name}
+      <div className="bg-yellow-400 p-4 flex flex-col items-center text-center mt-[-1rem]">
+        <h3 className="font-bold text-lg text-white mb-2">
+          {product.name || product.nombre}
         </h3>
-        <p className="text-gray-500 text-sm mb-2">
-          {product.descripcion || product.description}
+        <p className="text-white text-sm mb-2 line-clamp-2">
+          {product.description || product.descripcion || "Descripción corta"}
         </p>
-        <p className="text-green-600 font-bold text-lg mb-3">
-          ${product.precio || product.price}
+        <p className="font-bold text-xl text-white mb-3">
+          ${product.price || product.precio}
         </p>
-        {onAddToCart && (
+
+        {/* Control de cantidad y botón */}
+        <div className="flex items-center gap-2 mb-2">
           <button
-            onClick={() => onAddToCart(product)}
-            className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors text-sm"
+            className="bg-white text-yellow-400 px-2 rounded"
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
           >
-            🛒 Agregar al carrito
+            -
           </button>
-        )}
+          <span className="text-white font-semibold">{quantity}</span>
+          <button
+            className="bg-white text-yellow-400 px-2 rounded"
+            onClick={() => setQuantity((q) => q + 1)}
+          >
+            +
+          </button>
+        </div>
+
+        <button
+          onClick={handleAdd}
+          className="bg-white text-yellow-400 font-bold px-4 py-2 rounded shadow hover:bg-yellow-100 transition"
+        >
+          ADD TO CART
+        </button>
       </div>
     </div>
   );
