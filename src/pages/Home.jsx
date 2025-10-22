@@ -2,6 +2,7 @@ import React from "react";
 import ProductList from "../components/ProductList";
 import InfiniteCarousel from "../components/InfiniteCarousel";
 import InfiniteCarousel2 from "../components/InfiniteCarousel2";
+import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import Separador from "../components/Separador";
 
 const Home = ({ products }) => {
@@ -80,6 +81,9 @@ const Home = ({ products }) => {
           </section>
         </>
       )}
+
+      {/* 🔹 Carrusel secundario */}
+      <InfiniteCarousel3 />
     </>
   );
 };
