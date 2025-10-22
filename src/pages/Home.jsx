@@ -30,6 +30,8 @@ const Home = ({ products }) => {
       <Separador />
       {/* Carrusel de categorías */}
       <InfiniteCarousel2 />
+      {/* 👇 Segunda sección de productos */}
+      <ProductListSecondary products={products} title="Productos Destacados" />
     </>
   );
 };
