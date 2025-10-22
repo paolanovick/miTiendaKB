@@ -168,13 +168,21 @@ function App() {
   }
 
   return (
-    <CartProvider>
+     <CartProvider>
       {location.pathname !== "/admin" && location.pathname !== "/login" && (
         <Header />
       )}
 
       <Routes>
-        
+        <Route
+          path="/"
+          element={<Home products={products} />}  
+        />
+
+        <Route
+          path="/producto/:id"
+          element={<ProductDetail products={products} />}
+        />
 
         <Route
           path="/producto/:id"
