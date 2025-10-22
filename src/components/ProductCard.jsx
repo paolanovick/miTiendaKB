@@ -1,15 +1,20 @@
+import { useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 
 const ProductCard = ({ product, onAddToCart }) => {
   const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
 
   const handleAdd = () => {
     onAddToCart({ ...product, quantity });
   };
 
   return (
-    <div className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col">
-      {/* Imagen sobresaliente */}
+    <div
+      className="relative bg-white shadow-lg rounded-lg overflow-hidden flex flex-col cursor-pointer"
+      onClick={() => navigate(`/producto/${product.id || product._id}`)}
+    >
+      {/* Imagen */}
       <div className="relative h-48 flex justify-center items-start -mt-12">
         <img
           src={product.image || "https://placekitten.com/300/300"}
@@ -19,7 +24,10 @@ const ProductCard = ({ product, onAddToCart }) => {
       </div>
 
       {/* Cajón inferior */}
-      <div className="bg-yellow-400 p-4 flex flex-col items-center text-center mt-[-1rem]">
+      <div
+        className="bg-yellow-400 p-4 flex flex-col items-center text-center mt-[-1rem]"
+        onClick={(e) => e.stopPropagation()} // evita abrir detalles al presionar botones
+      >
         <h3 className="font-bold text-lg text-white mb-2">
           {product.name || product.nombre}
         </h3>
@@ -30,7 +38,7 @@ const ProductCard = ({ product, onAddToCart }) => {
           ${product.price || product.precio}
         </p>
 
-        {/* Control de cantidad y botón */}
+        {/* Controles */}
         <div className="flex items-center gap-2 mb-2">
           <button
             className="bg-white text-yellow-400 px-2 rounded"

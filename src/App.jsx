@@ -8,6 +8,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Footer from "./components/Footer";
 import Login from "./pages/Login";
 import CartPage from "./pages/CartPage";
+import { useCart } from "./hooks/useCart";
 
 const API_PRODUCTS = "/api/products";
 
@@ -15,7 +16,7 @@ function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
-
+const { addToCart } = useCart();
   // 🧩 Función segura para parsear JSON
   const safeJson = async (response) => {
     try {
@@ -173,7 +174,11 @@ function App() {
       )}
 
       <Routes>
-        <Route path="/" element={<Home products={products} />} />
+        <Route
+          path="/"
+          element={<Home products={products} onAddToCart={addToCart} />}
+        />
+
         <Route
           path="/producto/:id"
           element={<ProductDetail products={products} />}
