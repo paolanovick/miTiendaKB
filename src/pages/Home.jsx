@@ -2,6 +2,7 @@ import React from "react";
 import ProductListPaginated from "../components/ProductListPaginated";
 import InfiniteCarousel from "../components/InfiniteCarousel";
 import Separador from "../components/Separador";
+import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 
 const Home = ({ products }) => {
   return (
@@ -27,6 +28,8 @@ const Home = ({ products }) => {
       <ProductListPaginated products={products} />
       {/* 👇 Separador aquí */}
       <Separador />
+      {/* Carrusel de categorías */}
+      <InfiniteCarousel2 />
     </>
   );
 };

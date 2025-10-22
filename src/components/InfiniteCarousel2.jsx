@@ -1,14 +1,14 @@
 import React from "react";
 
-export default function InfiniteCarousel() {
+export default function InfiniteCarousel2() {
   const categories = [
-    "MOCHILAS",
+    "BOLSOS",
     "KUKEBAGS",
-    "MOCHILAS",
+    "BOLSOS",
     "KUKEBAGS",
-    "MOCHILAS",
+    "BOLSOS",
     "KUKEBAGS",
-    "MOCHILAS",
+    "BOLSOS",
   ];
 
   const duplicatedCategories = [...categories, ...categories, ...categories];
