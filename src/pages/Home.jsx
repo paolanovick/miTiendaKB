@@ -49,8 +49,7 @@ const Home = ({ products }) => {
         <section className="py-16 bg-gray-50">
           <ProductList
             products={mochilas}
-            title="🎒 Mochilas"
-            paginated={true}
+                       paginated={true}
           />
         </section>
       )}
@@ -76,7 +75,7 @@ const Home = ({ products }) => {
         <section className="py-16 bg-gray-50">
           <ProductList
             products={accesorios}
-            title="🕶️ Accesorios"
+           
             paginated={true}
           />
         </section>
