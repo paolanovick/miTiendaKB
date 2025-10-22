@@ -64,8 +64,10 @@ const Home = ({ products }) => {
           <ProductList products={bolsos} paginated={false} />
         </section>
       )}
-      {/* Separador decorativo */}
+
+      {/* Separador decorativo 2 */}
       <Separador2 />
+
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
 
