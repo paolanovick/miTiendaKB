@@ -53,9 +53,19 @@ function App() {
           description: p.description || p.descripcion || "",
           price: p.price || p.precio || 0,
           image: p.image || p.imagen || "https://placekitten.com/300/200",
+          category: p.category || p.categoria || "mochilas", // 👈 NUEVO: Mapear categoría
         }));
 
       console.log("✅ Productos mapeados:", mapped);
+      console.log(
+        "🎒 Mochilas:",
+        mapped.filter((p) => p.category === "mochilas").length
+      );
+      console.log(
+        "👜 Bolsos:",
+        mapped.filter((p) => p.category === "bolsos").length
+      );
+
       setProducts(mapped);
     } catch (error) {
       console.error("❌ Error al cargar productos:", error);

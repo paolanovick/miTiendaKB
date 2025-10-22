@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
+  const [filtered, setFiltered] = useState([]); // 🔹 productos filtrados
+  const [categoryFilter, setCategoryFilter] = useState("todos"); // 🔹 filtro activo
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState(null);
@@ -11,9 +13,10 @@ const Dashboard = () => {
     descripcion: "",
     precio: "",
     image: "",
+    categoria: "",
   });
 
-  // 🔹 Cargar productos desde API
+  // 🔹 Cargar productos desde la API
   const fetchProducts = async () => {
     setLoading(true);
     setError(null);
@@ -27,9 +30,11 @@ const Dashboard = () => {
         descripcion: p.descripcion,
         precio: p.precio,
         image: p.image,
+        categoria: p.categoria || "mochilas",
       }));
 
       setProducts(mappedProducts);
+      setFiltered(mappedProducts);
     } catch (err) {
       console.error("❌ Error al cargar productos:", err);
       setError("No se pudieron cargar los productos");
@@ -43,14 +48,29 @@ const Dashboard = () => {
     fetchProducts();
   }, []);
 
-  // 🔹 Manejo del formulario
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // 🔹 Filtrar productos según la categoría elegida
+  useEffect(() => {
+    if (categoryFilter === "todos") {
+      setFiltered(products);
+    } else {
+      setFiltered(
+        products.filter(
+          (p) => p.categoria?.toLowerCase() === categoryFilter.toLowerCase()
+        )
+      );
+    }
+  }, [categoryFilter, products]);
 
+  // 🔹 Manejo de cambios en el formulario
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  // 🔹 Guardar producto
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.nombre || !form.descripcion || !form.precio) {
+    if (!form.nombre || !form.descripcion || !form.precio || !form.categoria) {
       setError("Por favor completa todos los campos obligatorios");
       setTimeout(() => setError(null), 3000);
       return;
@@ -68,12 +88,14 @@ const Dashboard = () => {
             descripcion: form.descripcion,
             precio: Number(form.precio),
             image: form.image,
+            categoria: form.categoria,
           }
         : {
             nombre: form.nombre,
             descripcion: form.descripcion,
             precio: Number(form.precio),
             image: form.image,
+            categoria: form.categoria,
           };
 
       const response = await fetch("/api/products", {
@@ -83,12 +105,18 @@ const Dashboard = () => {
       });
 
       const result = await response.json();
-
       if (!response.ok)
         throw new Error(result.error || "Error al guardar producto");
 
       await fetchProducts();
-      setForm({ id: null, nombre: "", descripcion: "", precio: "", image: "" });
+      setForm({
+        id: null,
+        nombre: "",
+        descripcion: "",
+        precio: "",
+        image: "",
+        categoria: "",
+      });
 
       setMensaje(
         form.id
@@ -113,13 +141,14 @@ const Dashboard = () => {
       descripcion: product.descripcion,
       precio: product.precio,
       image: product.image,
+      categoria: product.categoria || "",
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // 🔹 Eliminar producto
   const handleDelete = async (id) => {
-    if (!window.confirm("¿Estás segura de eliminar este producto?")) return;
+    if (!window.confirm("¿Estás seguro de eliminar este producto?")) return;
 
     setLoading(true);
     setError(null);
@@ -132,11 +161,9 @@ const Dashboard = () => {
       });
 
       const result = await response.json();
-
       if (!response.ok) throw new Error(result.error || "Error al eliminar");
 
       await fetchProducts();
-
       setMensaje("Producto eliminado ✅");
       setTimeout(() => setMensaje(""), 3000);
     } catch (err) {
@@ -171,7 +198,7 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* Formulario */}
+      {/* 🧾 Formulario */}
       <form
         onSubmit={handleSubmit}
         className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8 bg-white p-6 rounded-lg shadow"
@@ -186,6 +213,7 @@ const Dashboard = () => {
           required
           disabled={loading}
         />
+
         <input
           type="text"
           name="descripcion"
@@ -196,6 +224,7 @@ const Dashboard = () => {
           required
           disabled={loading}
         />
+
         <input
           type="number"
           name="precio"
@@ -206,6 +235,7 @@ const Dashboard = () => {
           required
           disabled={loading}
         />
+
         <input
           type="text"
           name="image"
@@ -213,7 +243,6 @@ const Dashboard = () => {
           value={form.image}
           onChange={(e) => {
             let value = e.target.value;
-            // Si el enlace es de Drive, lo convertimos al formato embed
             if (value.includes("drive.google.com/file/d/")) {
               const match = value.match(/\/d\/(.*?)\//);
               if (match && match[1]) {
@@ -227,6 +256,21 @@ const Dashboard = () => {
           disabled={loading}
         />
 
+        {/* 🔹 Selector de Categoría */}
+        <select
+          name="categoria"
+          value={form.categoria}
+          onChange={handleChange}
+          className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
+          required
+          disabled={loading}
+        >
+          <option value="">Seleccionar categoría</option>
+          <option value="mochilas">🎒 Mochilas</option>
+          <option value="bolsos">👜 Bolsos</option>
+          <option value="accesorios">🕶️ Accesorios</option>
+        </select>
+
         <button
           type="submit"
           className="bg-green-600 text-white py-3 rounded hover:bg-green-700 col-span-full font-semibold disabled:bg-gray-400"
@@ -236,15 +280,31 @@ const Dashboard = () => {
         </button>
       </form>
 
-      {/* Lista de productos */}
+      {/* 🔸 Filtro por categoría */}
+      <div className="mb-6 flex flex-wrap items-center gap-3">
+        <label className="font-semibold text-gray-700">Filtrar por:</label>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="border border-gray-300 rounded p-2 focus:outline-none focus:border-blue-600"
+          disabled={loading}
+        >
+          <option value="todos">📦 Todos</option>
+          <option value="mochilas">🎒 Mochilas</option>
+          <option value="bolsos">👜 Bolsos</option>
+          <option value="accesorios">🕶️ Accesorios</option>
+        </select>
+      </div>
+
+      {/* 🧩 Lista de productos */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {products.length === 0 && !loading && (
+        {filtered.length === 0 && !loading && (
           <p className="text-gray-600 col-span-full text-center">
-            No hay productos disponibles.
+            No hay productos para mostrar.
           </p>
         )}
 
-        {products.map((p) => (
+        {filtered.map((p) => (
           <div
             key={p.id}
             className="border rounded-lg shadow hover:shadow-xl p-4 flex flex-col bg-white transition-all"
@@ -256,8 +316,14 @@ const Dashboard = () => {
             />
             <h3 className="font-bold text-lg text-gray-800">{p.nombre}</h3>
             <p className="text-gray-500 mb-2 text-sm">{p.descripcion}</p>
-            <p className="text-green-600 font-semibold text-lg mb-3">
+            <p className="text-green-600 font-semibold text-lg mb-2">
               ${p.precio}
+            </p>
+            <p className="text-sm text-gray-500 mb-3">
+              Categoría:{" "}
+              <span className="font-semibold capitalize">
+                {p.categoria || "sin categoría"}
+              </span>
             </p>
 
             <div className="flex gap-2 mt-auto">
