@@ -5,7 +5,7 @@ import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import Separador from "../components/Separador";
 
-const Home = ({ products, onAddToCart }) => {
+const Home = ({ products }) => {
   // 🔹 Filtrar productos por categoría
   const mochilas = products.filter(
     (p) =>
@@ -51,7 +51,6 @@ const Home = ({ products, onAddToCart }) => {
             products={mochilas}
             title="🎒 Mochilas"
             paginated={true}
-            onAddToCart={onAddToCart}
           />
         </section>
       )}
@@ -65,19 +64,13 @@ const Home = ({ products, onAddToCart }) => {
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
         <section className="py-16 bg-white">
-          <ProductList
-            products={bolsos}
-            title="👜 Bolsos"
-            paginated={false}
-            onAddToCart={onAddToCart}
-          />
+          <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
         </section>
       )}
 
-     
-
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
+
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
         <section className="py-16 bg-gray-50">
@@ -85,7 +78,6 @@ const Home = ({ products, onAddToCart }) => {
             products={accesorios}
             title="🕶️ Accesorios"
             paginated={true}
-            onAddToCart={onAddToCart}
           />
         </section>
       )}
