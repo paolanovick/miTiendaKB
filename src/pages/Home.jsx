@@ -4,6 +4,7 @@ import InfiniteCarousel from "../components/InfiniteCarousel";
 import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import Separador from "../components/Separador";
+import Separador2 from "../components/Separador2";
 
 const Home = ({ products }) => {
   // 🔹 Filtrar productos por categoría
@@ -47,10 +48,7 @@ const Home = ({ products }) => {
       {/* 🎒 Sección Mochilas */}
       {mochilas.length > 0 && (
         <section className="py-16 bg-gray-50">
-          <ProductList
-            products={mochilas}
-                       paginated={true}
-          />
+          <ProductList products={mochilas} paginated={true} />
         </section>
       )}
 
@@ -66,18 +64,15 @@ const Home = ({ products }) => {
           <ProductList products={bolsos} paginated={false} />
         </section>
       )}
-
+      {/* Separador decorativo */}
+      <Separador2 />
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
 
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
         <section className="py-16 bg-gray-50">
-          <ProductList
-            products={accesorios}
-           
-            paginated={true}
-          />
+          <ProductList products={accesorios} paginated={true} />
         </section>
       )}
     </>

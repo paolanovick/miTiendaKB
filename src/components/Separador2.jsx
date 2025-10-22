@@ -2,9 +2,15 @@ import React from "react";
 
 const Separador2 = () => {
   return (
-    <div className="w-full h-12 my-16 flex justify-center items-center">
-          <div className="w-24 h-1 bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400 rounded-full"></div>
-          
+    <div
+      className="w-full h-screen bg-cover bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `url('https://i.ibb.co/pjmmyJMT/vista-superior-del-hilo-con-tijeras-y-espacio-de-copia.jpg')`,
+      }}
+    >
+      <div className="flex items-center justify-center h-full bg-black/10">
+        {/* Opcional: Puedes agregar texto o dejarlo vacío para solo mostrar la imagen */}
+      </div>
     </div>
   );
 };
