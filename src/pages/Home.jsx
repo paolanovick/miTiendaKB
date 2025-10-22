@@ -67,7 +67,8 @@ const Home = ({ products }) => {
           <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
         </section>
       )}
-
+      {/* 🔹 Carrusel secundario */}
+      <InfiniteCarousel3 />
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
         <>
@@ -81,9 +82,6 @@ const Home = ({ products }) => {
           </section>
         </>
       )}
-
-      {/* 🔹 Carrusel secundario */}
-      <InfiniteCarousel3 />
     </>
   );
 };
