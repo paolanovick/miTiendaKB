@@ -209,12 +209,24 @@ const Dashboard = () => {
         <input
           type="text"
           name="image"
-          placeholder="URL Imagen"
+          placeholder="URL Imagen (Drive o enlace directo)"
           value={form.image}
-          onChange={handleChange}
+          onChange={(e) => {
+            let value = e.target.value;
+            // Si el enlace es de Drive, lo convertimos al formato embed
+            if (value.includes("drive.google.com/file/d/")) {
+              const match = value.match(/\/d\/(.*?)\//);
+              if (match && match[1]) {
+                const id = match[1];
+                value = `https://drive.google.com/uc?export=view&id=${id}`;
+              }
+            }
+            setForm({ ...form, image: value });
+          }}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
           disabled={loading}
         />
+
         <button
           type="submit"
           className="bg-green-600 text-white py-3 rounded hover:bg-green-700 col-span-full font-semibold disabled:bg-gray-400"
