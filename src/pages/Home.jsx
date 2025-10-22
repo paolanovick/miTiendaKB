@@ -63,7 +63,7 @@ const Home = ({ products }) => {
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
         <section className="py-16 bg-white">
-          <ProductList products={bolsos} title="👜 Bolsos" paginated={false} />
+          <ProductList products={bolsos} paginated={false} />
         </section>
       )}
 
