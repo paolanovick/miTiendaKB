@@ -94,7 +94,7 @@ const ProductDetail = ({ products }) => {
 
               <button
                 onClick={() => addToCart({ ...product, quantity })}
-                className="w-full py-3 rounded-lg font-semibold transition-all bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 bg-amber-950 text-white hover:bg-amber-900"
               >
                 Agregar al carrito
               </button>
