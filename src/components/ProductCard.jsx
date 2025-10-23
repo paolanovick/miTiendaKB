@@ -44,7 +44,6 @@ const ProductCard = ({ product, onAddToCart }) => {
       {/* Tarjeta de información */}
       <div
         className="
-          bg-white 
           w-full 
           rounded-2xl 
           shadow-md 
@@ -55,6 +54,7 @@ const ProductCard = ({ product, onAddToCart }) => {
           hover:shadow-2xl
           relative
         "
+        style={{ backgroundColor: "#f2d9a0" }}
       >
         {/* Título */}
         <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
@@ -62,13 +62,13 @@ const ProductCard = ({ product, onAddToCart }) => {
         </h3>
 
         {/* Categoría */}
-        <p className="text-sm text-gray-500 mb-4">
+        <p className="text-sm text-gray-600 mb-4">
           {product.category || product.categoria || "Sin categoría"}
         </p>
 
         {/* Precio */}
         <div className="mb-4">
-          <span className="text-2xl font-bold text-green-600">
+          <span className="text-2xl font-bold text-amber-950">
             $ {(product.price || product.precio)?.toLocaleString()}
           </span>
         </div>
@@ -78,18 +78,18 @@ const ProductCard = ({ product, onAddToCart }) => {
           onClick={handleAddToCart}
           className="
             w-full 
-            bg-gradient-to-r from-blue-500 to-purple-600 
             text-white 
             font-semibold 
             py-3 
             rounded-xl 
-            hover:from-blue-600 hover:to-purple-700 
             transition-all duration-300 
             shadow-md hover:shadow-lg
             transform hover:-translate-y-0.5
+            bg-amber-950
+            hover:bg-amber-900
           "
         >
-          Agregar al carrito
+          Ver más
         </button>
       </div>
     </div>

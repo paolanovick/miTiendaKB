@@ -296,8 +296,8 @@ const Dashboard = () => {
         </select>
       </div>
 
-      {/* 🧩 Lista de productos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* 🧩 Lista de productos - DISEÑO ACTUALIZADO */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-24">
         {filtered.length === 0 && !loading && (
           <p className="text-gray-600 col-span-full text-center">
             No hay productos para mostrar.
@@ -305,42 +305,55 @@ const Dashboard = () => {
         )}
 
         {filtered.map((p) => (
-          <div
-            key={p.id}
-            className="border rounded-lg shadow hover:shadow-xl p-4 flex flex-col bg-white transition-all"
-          >
-            <img
-              src={p.image}
-              alt={p.nombre}
-              className="h-40 w-full object-cover rounded mb-3"
-            />
-            <h3 className="font-bold text-lg text-gray-800">{p.nombre}</h3>
-            <p className="text-gray-500 mb-2 text-sm">{p.descripcion}</p>
-            <p className="text-green-600 font-semibold text-lg mb-2">
-              ${p.precio}
-            </p>
-            <p className="text-sm text-gray-500 mb-3">
-              Categoría:{" "}
-              <span className="font-semibold capitalize">
-                {p.categoria || "sin categoría"}
-              </span>
-            </p>
+          <div key={p.id} className="relative group">
+            {/* Imagen flotante - mitad afuera, mitad dentro */}
+            <div className="absolute -top-16 sm:-top-20 left-1/2 -translate-x-1/2 w-40 h-40 sm:w-48 sm:h-48 rounded-2xl overflow-hidden shadow-xl transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-2 bg-white z-10">
+              <img
+                src={p.image}
+                alt={p.nombre}
+                className="w-full h-full object-cover"
+              />
+            </div>
 
-            <div className="flex gap-2 mt-auto">
-              <button
-                onClick={() => handleEdit(p)}
-                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded hover:bg-blue-600 transition-colors text-sm"
-                disabled={loading}
-              >
-                ✏️ Editar
-              </button>
-              <button
-                onClick={() => handleDelete(p.id)}
-                className="flex-1 bg-red-500 text-white py-2 px-3 rounded hover:bg-red-600 transition-colors text-sm"
-                disabled={loading}
-              >
-                🗑️ Eliminar
-              </button>
+            {/* Tarjeta de información */}
+            <div
+              className="w-full rounded-2xl shadow-md pt-28 sm:pt-32 pb-6 px-5 flex flex-col items-center text-center transition-all duration-300 hover:shadow-2xl relative"
+              style={{ backgroundColor: "#f2d9a0" }}
+            >
+              {/* Título */}
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">
+                {p.nombre}
+              </h3>
+
+              {/* Categoría */}
+              <p className="text-sm text-gray-600 mb-4 capitalize">
+                {p.categoria || "sin categoría"}
+              </p>
+
+              {/* Precio */}
+              <div className="mb-4">
+                <span className="text-2xl font-bold text-amber-950">
+                  ${p.precio.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-2 w-full">
+                <button
+                  onClick={() => handleEdit(p)}
+                  className="flex-1 bg-blue-500 text-white py-2 px-3 rounded-lg hover:bg-blue-600 transition-colors text-sm font-semibold"
+                  disabled={loading}
+                >
+                  ✏️ Editar
+                </button>
+                <button
+                  onClick={() => handleDelete(p.id)}
+                  className="flex-1 bg-red-500 text-white py-2 px-3 rounded-lg hover:bg-red-600 transition-colors text-sm font-semibold"
+                  disabled={loading}
+                >
+                  🗑️ Eliminar
+                </button>
+              </div>
             </div>
           </div>
         ))}
