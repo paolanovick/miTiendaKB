@@ -108,7 +108,9 @@ const ProductDetail = ({ products }) => {
               )}
 
               <button
-                onClick={() => addToCart({ ...product, quantity })}
+                onClick={() => {
+                  if (product.stock > 0) addToCart({ ...product, quantity: 1 });
+                }}
                 disabled={product.stock <= 0}
                 className={`w-full py-3 rounded-lg font-semibold transition-all ${
                   product.stock > 0
