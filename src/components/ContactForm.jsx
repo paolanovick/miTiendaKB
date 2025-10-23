@@ -26,7 +26,7 @@ export default function ContactForm() {
 
     try {
       // Reemplazá esta URL con la URL de tu webhook de n8n en Digital Ocean
-      const response = await fetch("Thttps://n8n.triptest.com.ar/webhook/KB", {
+      const response = await fetch("https://n8n.triptest.com.ar/webhook/KB", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
