@@ -4,7 +4,8 @@ import { useCart } from "../hooks/useCart";
 import { Trash2, ArrowLeft } from "lucide-react";
 
 const CartPage = () => {
-  const { cart, addToCart, removeFromCart, clearCart, setCart } = useCart();
+  const { cart, addToCart, removeFromCart, clearCart, updateQuantity } =
+    useCart();
   const navigate = useNavigate();
 
   const total = cart.reduce(
@@ -19,13 +20,7 @@ const CartPage = () => {
 
   // Función para decrementar cantidad (mínimo 1)
   const decrementQuantity = (item) => {
-    setCart((prev) =>
-      prev.map((p) =>
-        p.id === item.id
-          ? { ...p, quantity: Math.max((p.quantity || 1) - 1, 1) }
-          : p
-      )
-    );
+    updateQuantity(item.id, (item.quantity || 1) - 1);
   };
 
   return (
@@ -79,14 +74,14 @@ const CartPage = () => {
                         <div className="flex items-center gap-2 mb-2">
                           <button
                             onClick={() => decrementQuantity(item)}
-                            className="px-2 bg-gray-200 rounded"
+                            className="px-3 py-1 bg-amber-950 text-white rounded hover:bg-amber-900 transition-all"
                           >
                             -
                           </button>
                           <span>{item.quantity || 1}</span>
                           <button
                             onClick={() => incrementQuantity(item)}
-                            className="px-2 bg-gray-200 rounded"
+                            className="px-3 py-1 bg-amber-950 text-white rounded hover:bg-amber-900 transition-all"
                           >
                             +
                           </button>
