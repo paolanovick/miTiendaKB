@@ -1,52 +1,69 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 export default function InfiniteCarousel() {
-  const categories = [
-    "MOCHILAS",
-    "KUKEBAGS",
-    "MOCHILAS",
-    "KUKEBAGS",
-    "MOCHILAS",
-    "KUKEBAGS",
-    "MOCHILAS",
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Creamos un array con elementos alternados
+  const items = [
+    { type: "text", content: "BOLSOS" },
+    { type: "logo" },
+    { type: "text", content: "BOLSOS" },
+    { type: "logo" },
+    { type: "text", content: "BOLSOS" },
+    { type: "logo" },
+    { type: "text", content: "BOLSOS" },
+    { type: "logo" },
   ];
 
-  const duplicatedCategories = [...categories, ...categories, ...categories];
+  // Duplicamos para el efecto infinito
+  const duplicatedItems = [...items, ...items];
 
   return (
-    <div
-      className="w-full py-12 overflow-hidden shadow-2xl"
-      style={{ backgroundColor: "#f2d9a0" }}
-    >
-      <style>{`
+    <div className="w-full bg-amber-950 py-6 overflow-hidden">
+      <div className="flex animate-scroll">
+        {duplicatedItems.map((item, index) => (
+          <div key={index} className="flex-shrink-0 px-8 flex items-center">
+            {item.type === "text" ? (
+              <span className="text-white text-4xl md:text-5xl font-bold whitespace-nowrap">
+                {item.content}
+              </span>
+            ) : (
+              <img
+                src={isScrolled ? "/logo-SF.png" : "/logoBCO.png"}
+                alt="Kuke Logo"
+                className="h-12 md:h-16 w-auto object-contain"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <style jsx>{`
         @keyframes scroll {
           0% {
             transform: translateX(0);
           }
           100% {
-            transform: translateX(-33.333%);
+            transform: translateX(-50%);
           }
         }
-        
-        .carousel-container {
-          animation: scroll 20s linear infinite;
+
+        .animate-scroll {
+          animation: scroll 15s linear infinite;
         }
-        
-        .carousel-container:hover {
+
+        .animate-scroll:hover {
           animation-play-state: paused;
         }
       `}</style>
-
-      <div className="flex gap-12 carousel-container">
-        {duplicatedCategories.map((category, index) => (
-          <div
-            key={index}
-            className="flex-shrink-0 px-12 py-6 text-kbbeige text-4xl font-bold whitespace-nowrap hover:text-kbcream transition-colors duration-300 cursor-pointer"
-          >
-            {category}
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
