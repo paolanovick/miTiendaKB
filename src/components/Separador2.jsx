@@ -6,7 +6,7 @@ const Separador2 = () => {
       {/* Lado Izquierdo - Imagen */}
       <div className="w-full md:w-1/2 h-1/2 md:h-full overflow-hidden">
         <img
-          src="https://i.ibb.co/B5d6P7yh/vista-trasera-de-dos-bolsos-de-cuero-que-llevan-turistas-femeninas-que-caminan-en-el-parque.jpg"
+          src="https://i.ibb.co/HpK20VV1/pink.jpg"
           alt="KUKEBAGS te acompaña"
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
         />
