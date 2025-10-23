@@ -66,33 +66,36 @@ const ProductDetail = ({ products }) => {
             </div>
 
             {/* Precio y cantidad */}
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-6 mb-6 text-white">
-              <p className="text-gray-300 text-xs uppercase mb-2">Precio</p>
-              <p className="text-3xl font-bold text-green-400 mb-3">
+            <div
+              className="rounded-xl p-6 mb-6"
+              style={{ backgroundColor: "#f2d9a0" }}
+            >
+              <p className="text-gray-600 text-xs uppercase mb-2">Precio</p>
+              <p className="text-3xl font-bold text-amber-950 mb-3">
                 ${product.price}
               </p>
               <p className="text-sm mb-4">
-                <span className="text-green-400 font-bold">Disponible</span>
+                <span className="text-green-600 font-bold">Disponible</span>
               </p>
 
               {/* Controles de cantidad */}
               <div className="flex items-center gap-4 mb-4">
                 <button
                   onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
-                  className="px-3 py-1 bg-gray-200 rounded"
+                  className="px-3 py-1 bg-amber-950 text-white rounded hover:bg-amber-900 transition-all"
                 >
                   -
                 </button>
                 <span className="font-semibold text-lg">{quantity}</span>
                 <button
                   onClick={() => setQuantity((q) => q + 1)}
-                  className="px-3 py-1 bg-gray-200 rounded"
+                  className="px-3 py-1 bg-amber-950 text-white rounded hover:bg-amber-900 transition-all"
                 >
                   +
                 </button>
               </div>
 
-               <button
+              <button
                 onClick={() => addToCart({ ...product, quantity })}
                 className="w-full py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 bg-amber-950 text-white hover:bg-amber-900"
               >
