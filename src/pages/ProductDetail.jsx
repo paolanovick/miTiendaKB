@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCart } from "../hooks/useCart";
 
@@ -6,9 +6,9 @@ const ProductDetail = ({ products }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-
-  // Buscar producto por id (puede venir como string o _id)
   const product = products.find((p) => p.id === id || p._id === id);
+
+  const [quantity, setQuantity] = useState(1);
 
   if (!product) {
     return (
@@ -26,7 +26,6 @@ const ProductDetail = ({ products }) => {
     );
   }
 
-  // Dividir especificaciones si existen
   const specifications = product.specifications
     ?.split(",")
     .map((s) => s.trim());
@@ -34,7 +33,6 @@ const ProductDetail = ({ products }) => {
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12">
       <div className="max-w-5xl mx-auto px-4">
-        {/* Botón volver */}
         <button
           onClick={() => navigate("/")}
           className="mb-8 text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-2"
@@ -67,7 +65,7 @@ const ProductDetail = ({ products }) => {
               </p>
             </div>
 
-            {/* Precio y botón agregar al carrito */}
+            {/* Precio y cantidad */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-6 mb-6 text-white">
               <p className="text-gray-300 text-xs uppercase mb-2">Precio</p>
               <p className="text-3xl font-bold text-green-400 mb-3">
@@ -87,8 +85,30 @@ const ProductDetail = ({ products }) => {
                     : "Sin stock"}
                 </span>
               </p>
+
+              {/* Controles de cantidad */}
+              {product.stock > 0 && (
+                <div className="flex items-center gap-4 mb-4">
+                  <button
+                    onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
+                    className="px-3 py-1 bg-gray-200 rounded"
+                  >
+                    -
+                  </button>
+                  <span className="font-semibold text-lg">{quantity}</span>
+                  <button
+                    onClick={() =>
+                      setQuantity((q) => Math.min(q + 1, product.stock))
+                    }
+                    className="px-3 py-1 bg-gray-200 rounded"
+                  >
+                    +
+                  </button>
+                </div>
+              )}
+
               <button
-                onClick={() => addToCart(product)}
+                onClick={() => addToCart({ ...product, quantity })}
                 disabled={product.stock <= 0}
                 className={`w-full py-3 rounded-lg font-semibold transition-all ${
                   product.stock > 0
