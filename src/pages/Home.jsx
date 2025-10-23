@@ -5,6 +5,7 @@ import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import Separador from "../components/Separador";
 import Separador2 from "../components/Separador2";
+import ContactForm from "../components/ContactForm";
 
 const Home = ({ products }) => {
   // 🔹 Filtrar productos por categoría
@@ -34,9 +35,7 @@ const Home = ({ products }) => {
         style={{
           backgroundImage: `url('https://i.ibb.co/qF77tC31/separador.png')`,
         }}
-      >
-       
-      </div>
+      ></div>
 
       {/* 🔹 Carrusel de categorías principales */}
       <InfiniteCarousel />
@@ -73,6 +72,7 @@ const Home = ({ products }) => {
           <ProductList products={accesorios} paginated={true} />
         </section>
       )}
+      <ContactForm />
     </>
   );
 };
