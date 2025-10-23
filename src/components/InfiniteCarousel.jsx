@@ -37,7 +37,7 @@ export default function InfiniteCarousel() {
               </span>
             ) : (
               <img
-                src={isScrolled ? "/logo-SF.png" : "/logoBCO.png"}
+                src={isScrolled ? "/logoBCO.png" : "/logoBCO.png"}
                 alt="Kuke Logo"
                 className="h-12 md:h-16 w-auto object-contain"
               />
