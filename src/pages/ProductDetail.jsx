@@ -72,53 +72,31 @@ const ProductDetail = ({ products }) => {
                 ${product.price}
               </p>
               <p className="text-sm mb-4">
-                Stock disponible:{" "}
-                <span
-                  className={
-                    product.stock > 0
-                      ? "text-green-400 font-bold"
-                      : "text-red-400"
-                  }
-                >
-                  {product.stock > 0
-                    ? `${product.stock} unidades`
-                    : "Sin stock"}
-                </span>
+                <span className="text-green-400 font-bold">Disponible</span>
               </p>
 
               {/* Controles de cantidad */}
-              {product.stock > 0 && (
-                <div className="flex items-center gap-4 mb-4">
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
-                    className="px-3 py-1 bg-gray-200 rounded"
-                  >
-                    -
-                  </button>
-                  <span className="font-semibold text-lg">{quantity}</span>
-                  <button
-                    onClick={() =>
-                      setQuantity((q) => Math.min(q + 1, product.stock))
-                    }
-                    className="px-3 py-1 bg-gray-200 rounded"
-                  >
-                    +
-                  </button>
-                </div>
-              )}
+              <div className="flex items-center gap-4 mb-4">
+                <button
+                  onClick={() => setQuantity((q) => Math.max(q - 1, 1))}
+                  className="px-3 py-1 bg-gray-200 rounded"
+                >
+                  -
+                </button>
+                <span className="font-semibold text-lg">{quantity}</span>
+                <button
+                  onClick={() => setQuantity((q) => q + 1)}
+                  className="px-3 py-1 bg-gray-200 rounded"
+                >
+                  +
+                </button>
+              </div>
 
               <button
-                onClick={() => {
-                  if (product.stock > 0) addToCart({ ...product, quantity: 1 });
-                }}
-                disabled={product.stock <= 0}
-                className={`w-full py-3 rounded-lg font-semibold transition-all ${
-                  product.stock > 0
-                    ? "bg-blue-600 hover:bg-blue-700 text-white"
-                    : "bg-gray-600 text-gray-300 cursor-not-allowed"
-                }`}
+                onClick={() => addToCart({ ...product, quantity })}
+                className="w-full py-3 rounded-lg font-semibold transition-all bg-blue-600 hover:bg-blue-700 text-white"
               >
-                {product.stock > 0 ? "Agregar al carrito" : "Sin stock"}
+                Agregar al carrito
               </button>
             </div>
 
