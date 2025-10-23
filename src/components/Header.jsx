@@ -20,6 +20,9 @@ export default function Header() {
   // Suma total de unidades en el carrito
   const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
+  console.log("🛒 Cart en Header:", cart);
+  console.log("📊 Total items:", totalItems);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${

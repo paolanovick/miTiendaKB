@@ -92,7 +92,7 @@ const ProductDetail = ({ products }) => {
                 </button>
               </div>
 
-              <button
+               <button
                 onClick={() => addToCart({ ...product, quantity })}
                 className="w-full py-3 rounded-xl font-semibold transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5 bg-amber-950 text-white hover:bg-amber-900"
               >
