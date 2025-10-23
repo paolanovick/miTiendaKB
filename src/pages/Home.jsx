@@ -35,11 +35,7 @@ const Home = ({ products }) => {
           backgroundImage: `url('https://i.ibb.co/qF77tC31/separador.png')`,
         }}
       >
-        <div className="flex items-center justify-center h-full bg-black/30">
-          <h1 className="text-white text-5xl font-bold text-center drop-shadow-lg">
-            Colección Exclusiva!
-          </h1>
-        </div>
+       
       </div>
 
       {/* 🔹 Carrusel de categorías principales */}
