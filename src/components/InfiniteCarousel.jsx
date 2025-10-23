@@ -27,7 +27,7 @@ export default function InfiniteCarousel() {
   const duplicatedItems = [...items, ...items];
 
   return (
-    <div className="w-full bg-amber-950 py-6 overflow-hidden">
+    <div className="w-full bg-amber-950 py-12 overflow-hidden">
       <div className="flex animate-scroll">
         {duplicatedItems.map((item, index) => (
           <div key={index} className="flex-shrink-0 px-8 flex items-center">
