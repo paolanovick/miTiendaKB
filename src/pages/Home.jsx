@@ -47,7 +47,7 @@ const Home = ({ products }) => {
 
       {/* 🎒 Sección Mochilas */}
       {mochilas.length > 0 && (
-        <section className="pt-16 py-16 bg-gray-50">
+        <section className="pt-24 py-16 bg-gray-50">
           <ProductList products={mochilas} paginated={true} />
         </section>
       )}
@@ -60,7 +60,7 @@ const Home = ({ products }) => {
 
       {/* 👜 Sección Bolsos */}
       {bolsos.length > 0 && (
-        <section className="pt-16 py-16 bg-white">
+        <section className="pt-24 py-16 bg-white">
           <ProductList products={bolsos} paginated={false} />
         </section>
       )}
@@ -73,7 +73,7 @@ const Home = ({ products }) => {
 
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
-        <section className="pt-16 py-16 bg-gray-50">
+        <section className="pt-24 py-16 bg-gray-50">
           <ProductList products={accesorios} paginated={true} />
         </section>
       )}
