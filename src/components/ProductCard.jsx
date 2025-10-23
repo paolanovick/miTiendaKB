@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product }) => {
+  // eliminé onAddToCart porque el botón ahora no agrega al carrito
   const [imageUrl, setImageUrl] = useState(
     product.image || "https://placekitten.com/300/200"
   );
@@ -11,9 +12,10 @@ const ProductCard = ({ product, onAddToCart }) => {
     navigate(`/producto/${product.id || product._id}`);
   };
 
-  const handleAddToCart = (e) => {
-    e.stopPropagation(); // Evita que abra el detalle
-    onAddToCart(product);
+  // NUEVO: función para el botón "Ver más" que navega al detalle
+  const handleViewDetails = (e) => {
+    e.stopPropagation(); // Evita que también se dispare handleCardClick
+    navigate(`/producto/${product.id || product._id}`);
   };
 
   return (
@@ -73,9 +75,9 @@ const ProductCard = ({ product, onAddToCart }) => {
           </span>
         </div>
 
-        {/* Botón */}
+        {/* Botón "Ver más" ahora va al detalle */}
         <button
-          onClick={handleAddToCart}
+          onClick={handleViewDetails}
           className="
             w-full 
             text-white 

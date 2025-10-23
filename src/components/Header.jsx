@@ -17,6 +17,9 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Suma total de unidades en el carrito
+  const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -60,9 +63,9 @@ export default function Header() {
               className="relative hover:opacity-80 transition"
             >
               <ShoppingCart size={24} />
-              {cart.length > 0 && (
+              {totalItems > 0 && (
                 <span className="absolute -top-2 -right-2 bg-kbred text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cart.length}
+                  {totalItems}
                 </span>
               )}
             </Link>
@@ -98,7 +101,7 @@ export default function Header() {
             to="/carrito"
             className="block py-2 hover:opacity-80 transition"
           >
-            Carrito ({cart.length})
+            Carrito ({totalItems})
           </Link>
           <Link to="/login" className="block py-2 hover:opacity-80 transition">
             Login

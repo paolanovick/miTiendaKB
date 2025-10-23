@@ -7,8 +7,8 @@ const ProductDetail = ({ products }) => {
   const navigate = useNavigate();
   const { addToCart } = useCart();
 
-  // ✅ Comparar como string
-  const product = products.find((p) => p.id === id);
+  // Buscar producto por id (puede venir como string o _id)
+  const product = products.find((p) => p.id === id || p._id === id);
 
   if (!product) {
     return (
@@ -26,10 +26,10 @@ const ProductDetail = ({ products }) => {
     );
   }
 
+  // Dividir especificaciones si existen
   const specifications = product.specifications
     ?.split(",")
     .map((s) => s.trim());
-  const reviews = product.reviews || [];
 
   return (
     <div className="min-h-screen bg-slate-50 pt-24 pb-12">
@@ -67,7 +67,7 @@ const ProductDetail = ({ products }) => {
               </p>
             </div>
 
-            {/* Precio y stock */}
+            {/* Precio y botón agregar al carrito */}
             <div className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl p-6 mb-6 text-white">
               <p className="text-gray-300 text-xs uppercase mb-2">Precio</p>
               <p className="text-3xl font-bold text-green-400 mb-3">
@@ -122,30 +122,6 @@ const ProductDetail = ({ products }) => {
             )}
           </div>
         </div>
-
-        {/* Reseñas */}
-        {reviews.length > 0 && (
-          <div className="mt-12">
-            <h3 className="text-2xl font-bold mb-6">Reseñas de clientes</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {reviews.map((review, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white rounded-lg p-4 shadow border-l-4 border-blue-600"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <p className="font-semibold text-sm">{review.author}</p>
-                    <p className="text-yellow-500 text-sm">
-                      {"⭐".repeat(review.rating)}
-                    </p>
-                  </div>
-                  <p className="text-gray-600 text-sm">{review.comment}</p>
-                  <p className="text-xs text-gray-400 mt-2">{review.date}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

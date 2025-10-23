@@ -8,11 +8,14 @@ export const CartProvider = ({ children }) => {
     setCart((prev) => {
       const exists = prev.find((p) => p.id === product.id);
       if (exists) {
+        // Calculamos la nueva cantidad sumando product.quantity si existe, o +1 por default
         return prev.map((p) =>
-          p.id === product.id ? { ...p, quantity: (p.quantity || 1) + 1 } : p
+          p.id === product.id
+            ? { ...p, quantity: (p.quantity || 1) + (product.quantity || 1) }
+            : p
         );
       } else {
-        return [...prev, { ...product, quantity: 1 }];
+        return [...prev, { ...product, quantity: product.quantity || 1 }];
       }
     });
   };

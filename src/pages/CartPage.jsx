@@ -4,13 +4,29 @@ import { useCart } from "../hooks/useCart";
 import { Trash2, ArrowLeft } from "lucide-react";
 
 const CartPage = () => {
-  const { cart, removeFromCart, clearCart } = useCart();
+  const { cart, addToCart, removeFromCart, clearCart, setCart } = useCart();
   const navigate = useNavigate();
 
   const total = cart.reduce(
     (sum, item) => sum + item.price * (item.quantity || 1),
     0
   );
+
+  // Función para incrementar cantidad
+  const incrementQuantity = (item) => {
+    addToCart(item);
+  };
+
+  // Función para decrementar cantidad (mínimo 1)
+  const decrementQuantity = (item) => {
+    setCart((prev) =>
+      prev.map((p) =>
+        p.id === item.id
+          ? { ...p, quantity: Math.max((p.quantity || 1) - 1, 1) }
+          : p
+      )
+    );
+  };
 
   return (
     <div className="min-h-screen pt-32 pb-12 px-4 bg-gray-50">
@@ -56,11 +72,26 @@ const CartPage = () => {
                     <p className="text-sm text-gray-500 mb-2">
                       SKU: {item.sku}
                     </p>
+
                     <div className="flex justify-between items-center">
                       <div>
-                        <p className="text-sm text-gray-600">
-                          Cantidad: {item.quantity || 1}
-                        </p>
+                        {/* Controles de cantidad */}
+                        <div className="flex items-center gap-2 mb-2">
+                          <button
+                            onClick={() => decrementQuantity(item)}
+                            className="px-2 bg-gray-200 rounded"
+                          >
+                            -
+                          </button>
+                          <span>{item.quantity || 1}</span>
+                          <button
+                            onClick={() => incrementQuantity(item)}
+                            className="px-2 bg-gray-200 rounded"
+                          >
+                            +
+                          </button>
+                        </div>
+
                         <p className="text-2xl font-bold text-green-600">
                           ${(item.price * (item.quantity || 1)).toFixed(2)}
                         </p>
