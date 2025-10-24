@@ -20,7 +20,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
           {/* Columna 1: Logo */}
           <div className="flex flex-col items-center lg:items-start">
-            <img src="/logoBCO.png" alt="Mi Tienda" className="h-25 mb-2" />
+            <img src="/logo-SF.png" alt="Mi Tienda" className="h-25 mb-2" />
             <p className="text-kbcream text-sm text-center lg:text-left">
               Tienda en línea de carteras y accesorios de calidad.
             </p>
