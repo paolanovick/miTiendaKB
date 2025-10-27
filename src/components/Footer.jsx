@@ -12,22 +12,17 @@ export default function Footer() {
 
     setLoading(true);
     try {
-      // Enviar email al webhook de n8n
       const res = await fetch(
         "https://n8n.triptest.com.ar/webhook/newsletter",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
         }
       );
-
       if (!res.ok) {
         throw new Error("Error al suscribirse");
       }
-
       setSubscribed(true);
       setEmail("");
       setTimeout(() => setSubscribed(false), 3000);
@@ -42,7 +37,7 @@ export default function Footer() {
   return (
     <footer className="text-kbcream" style={{ backgroundColor: "#f2d9a0" }}>
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
           {/* Columna 1: Logo */}
           <div className="flex flex-col items-center lg:items-start">
             <img src="/logo-SF.png" alt="Mi Tienda" className="h-25 mb-2" />
@@ -81,6 +76,40 @@ export default function Footer() {
                 </p>
               )}
             </form>
+          </div>
+
+          {/* Columna 5: Contacto y legales */}
+          <div>
+            <h3 className="text-lg font-bold text-kbbeige mb-4">
+              Contacto & Legal
+            </h3>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/contacto" className="hover:underline">
+                  Contacto Comercial
+                </Link>
+              </li>
+              <li>
+                <Link to="/politica-privacidad" className="hover:underline">
+                  Política de Privacidad
+                </Link>
+              </li>
+              <li>
+                <Link to="/redes-sociales" className="hover:underline">
+                  Redes Sociales
+                </Link>
+              </li>
+              <li>
+                <Link to="/legales" className="hover:underline">
+                  Legales
+                </Link>
+              </li>
+              <li>
+                <Link to="/terminos-condiciones" className="hover:underline">
+                  Términos & Condiciones
+                </Link>
+              </li>
+            </ul>
           </div>
         </div>
 
