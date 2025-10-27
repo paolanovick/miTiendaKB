@@ -45,9 +45,9 @@ export default function Footer() {
       <div className="footer-container max-w-7xl mx-auto px-4 py-12">
         {/* Logo y columnas */}
         <div className="footer-header">
-          <img src="/LogoKB-1.png" alt="Logo" className="footer-logo" />
-          👈 ESTA LÍNEA DA ERROR
-          <div className="footer-top grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 justify-items-center w-full">
+          <img src="./LogoKB-1.png" alt="Logo" className="footer-logo" />
+         
+          <div className="footer-top grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-8 justify-items-center w-full">
             {/* Columna 1: Secciones */}
             <div className="footer-column flex flex-col items-center text-center">
               <h3 className="font-bold text-lg mb-3">Secciones</h3>
