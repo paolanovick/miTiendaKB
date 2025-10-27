@@ -35,26 +35,26 @@ export default function Footer() {
   };
 
   return (
-    <footer className="text-kbcream" style={{ backgroundColor: "#f2d9a0" }}>
+    <footer className="text-kbcream bg-[#f2d9a0]">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 text-center lg:text-left">
           {/* Columna 1: Logo */}
           <div className="flex flex-col items-center lg:items-start">
             <img src="/logo-SF.png" alt="Mi Tienda" className="h-25 mb-2" />
-            <p className="text-kbcream text-sm text-center lg:text-left">
+            <p className="text-sm">
               Tienda en línea de carteras y accesorios de calidad.
             </p>
           </div>
 
-          {/* Columna 2 y 3... (igual que antes) */}
+          {/* Columna 2 y 3... (puedes agregar aquí tus otras secciones si las tienes) */}
 
           {/* Columna 4: Newsletter */}
-          <div>
+          <div className="flex flex-col items-center lg:items-start">
             <h3 className="text-lg font-bold text-kbbeige mb-4">Newsletter</h3>
-            <p className="text-kbcream text-sm mb-4">
+            <p className="text-sm mb-4">
               Suscríbete para recibir ofertas y novedades.
             </p>
-            <form onSubmit={handleNewsletter} className="space-y-3">
+            <form onSubmit={handleNewsletter} className="w-full space-y-3">
               <input
                 type="email"
                 placeholder="Tu correo electrónico"
@@ -71,7 +71,7 @@ export default function Footer() {
                 {loading ? "Suscribiendo..." : "Suscribirse"}
               </button>
               {subscribed && (
-                <p className="text-kbbeige text-sm text-center">
+                <p className="text-kbbeige text-sm mt-2">
                   ¡Gracias por suscribirte!
                 </p>
               )}
@@ -79,7 +79,7 @@ export default function Footer() {
           </div>
 
           {/* Columna 5: Contacto y legales */}
-          <div>
+          <div className="flex flex-col items-center lg:items-start">
             <h3 className="text-lg font-bold text-kbbeige mb-4">
               Contacto & Legal
             </h3>
@@ -113,7 +113,10 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Línea separadora... (igual que antes) */}
+        {/* Línea separadora */}
+        <div className="border-t border-kbred mt-8 pt-4 text-center text-sm">
+          © {new Date().getFullYear()} Mi Tienda. Todos los derechos reservados.
+        </div>
       </div>
     </footer>
   );
