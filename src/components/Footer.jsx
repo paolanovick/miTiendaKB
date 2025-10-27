@@ -42,7 +42,7 @@ export default function Footer() {
                 justify-items-center lg:justify-items-start text-center lg:text-left"
         >
           {/* Columna 1: Logo */}
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center lg:items-start">
             <img src="/logo-SF.png" alt="Mi Tienda" className="h-25 mb-2" />
             <p className="text-sm">
               Tienda en línea de carteras y accesorios de calidad.
