@@ -6,7 +6,7 @@ import {
   FaInstagram,
   FaLinkedin,
 } from "react-icons/fa";
-import Logo from "../public/Logo.png";
+import Logo from "../public/LogoKB-1.png";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
