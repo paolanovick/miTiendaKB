@@ -37,9 +37,12 @@ export default function Footer() {
   return (
     <footer className="text-kbcream bg-[#f2d9a0]">
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 text-center lg:text-left">
+        <div
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 
+                justify-items-center lg:justify-items-start text-center lg:text-left"
+        >
           {/* Columna 1: Logo */}
-          <div className="flex flex-col items-center lg:items-start">
+          <div className="flex flex-col">
             <img src="/logo-SF.png" alt="Mi Tienda" className="h-25 mb-2" />
             <p className="text-sm">
               Tienda en línea de carteras y accesorios de calidad.
