@@ -146,6 +146,10 @@ export default function Footer() {
           © {new Date().getFullYear()} Travel Connect. Todos los derechos
           reservados.
         </div>
+        <div className="footer-bottom mt-8 text-center text-sm">
+          © {new Date().getFullYear()} Powered by ConCódigoART.
+          https://concodigoart.vercel.app/
+        </div>
       </div>
     </div>
   );
