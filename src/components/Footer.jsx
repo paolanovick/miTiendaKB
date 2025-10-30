@@ -147,7 +147,7 @@ export default function Footer() {
           reservados.
         </div>
         <div className="footer-bottom mt-8 text-center text-sm">
-          © {new Date().getFullYear()} Powered by ConCódigoART.
+          Powered by ConCódigoART.
           https://concodigoart.vercel.app/
         </div>
       </div>
