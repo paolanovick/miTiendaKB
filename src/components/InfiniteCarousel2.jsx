@@ -13,15 +13,15 @@ export default function InfiniteCarousel() {
 
   // Creamos un array con elementos alternados
   const items = [
-    { type: "text", content: "CARTERAS" },
+    { type: "text", content: "MOCHILAS" },
     { type: "logo" },
-    { type: "text", content: "CARTERAS" },
+    { type: "text", content: "MOCHILAS" },
     { type: "logo" },
-    { type: "text", content: "CARTERAS" },
+    { type: "text", content: "MOCHILAS" },
     { type: "logo" },
-    { type: "text", content: "CARTERAS" },
+    { type: "text", content: "MOCHILAS" },
     { type: "logo" },
-    { type: "text", content: "CARTERAS" },
+    { type: "text", content: "MOCHILAS" },
     { type: "logo" },
   ];
 
