@@ -17,10 +17,11 @@ const Home = ({ products }) => {
       p.categoria?.toLowerCase() === "mochilas"
   );
 
-  const bolsos = products.filter(
+  const morrales = products.filter(
+    // 👈 CAMBIAR "bolsos" por "morrales"
     (p) =>
-      p.category?.toLowerCase() === "bolsos" ||
-      p.categoria?.toLowerCase() === "bolsos"
+      p.category?.toLowerCase() === "morrales" ||
+      p.categoria?.toLowerCase() === "morrales"
   );
 
   const accesorios = products.filter(
@@ -28,11 +29,12 @@ const Home = ({ products }) => {
       p.category?.toLowerCase() === "accesorios" ||
       p.categoria?.toLowerCase() === "accesorios"
   );
-   const carteras = products.filter(
-     (p) =>
-       p.category?.toLowerCase() === "carteras" ||
-       p.categoria?.toLowerCase() === "carteras"
-   );
+
+  const carteras = products.filter(
+    (p) =>
+      p.category?.toLowerCase() === "carteras" ||
+      p.categoria?.toLowerCase() === "carteras"
+  );
 
   return (
     <>
@@ -60,10 +62,10 @@ const Home = ({ products }) => {
       {/* 🔹 Carrusel secundario */}
       <InfiniteCarousel2 />
 
-      {/* 👜 Sección Bolsos */}
-      {bolsos.length > 0 && (
+      {/* 🎒 Sección Morrales */}
+      {morrales.length > 0 && ( // 👈 CAMBIAR "bolsos" por "morrales"
         <section className="pt-24 py-16 bg-white">
-          <ProductList products={bolsos} paginated={false} />
+          <ProductList products={morrales} paginated={false} />
         </section>
       )}
 
@@ -72,12 +74,14 @@ const Home = ({ products }) => {
 
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
-      {/* 👜 Sección Carteras */}
+
+      {/* 💼 Sección Carteras */}
       {carteras.length > 0 && (
         <section className="pt-24 py-16 bg-white">
           <ProductList products={carteras} paginated={false} />
         </section>
       )}
+
       {/* Separador decorativo 2 */}
       <Separador2 />
 
@@ -90,6 +94,7 @@ const Home = ({ products }) => {
           <ProductList products={accesorios} paginated={true} />
         </section>
       )}
+
       <ContactForm />
     </>
   );
