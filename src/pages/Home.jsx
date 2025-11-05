@@ -66,10 +66,10 @@ const Home = ({ products }) => {
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
 
-      {/* 💼 Sección Carteras */}
-      {carteras.length > 0 && (
-        <section className="pt-24 py-16 bg-white">
-          <ProductList products={carteras} paginated={false} />
+      {/* ✨ Sección Accesorios */}
+      {accesorios.length > 0 && (
+        <section className="pt-24 py-16 bg-gray-50">
+          <ProductList products={accesorios} paginated={true} />
         </section>
       )}
 
@@ -78,14 +78,12 @@ const Home = ({ products }) => {
 
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel4 />
-
-      {/* ✨ Sección Accesorios */}
-      {accesorios.length > 0 && (
-        <section className="pt-24 py-16 bg-gray-50">
-          <ProductList products={accesorios} paginated={true} />
+      {/* 💼 Sección Carteras */}
+      {carteras.length > 0 && (
+        <section className="pt-24 py-16 bg-white">
+          <ProductList products={carteras} paginated={false} />
         </section>
       )}
-
       <ContactForm />
     </>
   );
