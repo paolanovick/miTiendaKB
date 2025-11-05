@@ -49,7 +49,7 @@ const Home = ({ products }) => {
       )}
 
       {/* Separador decorativo */}
-      <Separador />
+      <Separador2 />
 
       {/* 🔹 Carrusel secundario */}
       <InfiniteCarousel2 />
@@ -62,7 +62,7 @@ const Home = ({ products }) => {
       )}
 
       {/* Separador decorativo 2 */}
-      <Separador2 />
+      <Separador />
 
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
