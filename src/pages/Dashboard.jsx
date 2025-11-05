@@ -258,13 +258,22 @@ const Dashboard = () => {
           placeholder="URL Imagen (Drive o enlace directo)"
           value={form.image}
           onChange={(e) => {
-            let value = e.target.value;
-           if (value.includes("drive.google.com")) {
-             const id = value.split("/d/")[1]?.split("/")[0];
-             if (id) {
-               value = `https://drive.google.com/uc?export=view&id=${id}`;
-             }
-           }
+            let value = e.target.value.trim();
+
+            // Extraer ID de cualquier formato de Drive
+            let id = null;
+
+            if (value.includes("drive.google.com/file/d/")) {
+              id = value.split("/d/")[1]?.split("/")[0];
+            } else if (value.includes("id=")) {
+              id = value.split("id=")[1];
+            }
+
+            // Si encontramos ID → convertir a enlace directo
+            if (id) {
+              value = `https://drive.google.com/uc?export=view&id=${id}`;
+            }
+
             setForm({ ...form, image: value });
           }}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
