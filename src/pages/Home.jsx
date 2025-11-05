@@ -7,6 +7,7 @@ import InfiniteCarousel3 from "../components/InfiniteCarousel3";
 import InfiniteCarousel4 from "../components/InfiniteCarousel4";
 import Separador from "../components/Separador";
 import Separador2 from "../components/Separador2";
+import Separador3 from "../components/Separador3";
 import ContactForm from "../components/ContactForm";
 
 const Home = ({ products }) => {
@@ -74,7 +75,7 @@ const Home = ({ products }) => {
       )}
 
       {/* Separador decorativo 2 */}
-      <Separador2 />
+      <Separador3 />
 
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel4 />
