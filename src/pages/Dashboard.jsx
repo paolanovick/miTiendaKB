@@ -259,13 +259,12 @@ const Dashboard = () => {
           value={form.image}
           onChange={(e) => {
             let value = e.target.value;
-            if (value.includes("drive.google.com/file/d/")) {
-              const match = value.match(/\/d\/(.*?)\//);
-              if (match && match[1]) {
-                const id = match[1];
-                value = `https://drive.google.com/uc?export=view&id=${id}`;
-              }
-            }
+           if (value.includes("drive.google.com")) {
+             const id = value.split("/d/")[1]?.split("/")[0];
+             if (id) {
+               value = `https://drive.google.com/uc?export=view&id=${id}`;
+             }
+           }
             setForm({ ...form, image: value });
           }}
           className="border border-gray-300 rounded p-3 focus:outline-none focus:border-blue-600"
