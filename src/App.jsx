@@ -46,16 +46,20 @@ function App() {
       const arr = Array.isArray(data) ? data : [data];
 
       // Filtrar elementos null o undefined antes de mapear
-     const mapped = arr
-       .filter((p) => p !== null && p !== undefined)
-       .map((p) => ({
-         id: p.id || p._id,
-         nombre: p.name || p.nombre || "Sin nombre",
-         descripcion: p.description || p.descripcion || "",
-         precio: p.price || p.precio || 0,
-         image: p.image || p.imagen || "https://placekitten.com/300/200",
-         categoria: p.category || p.categoria || "", // 👈 CAMBIAR AQUÍ
-       }));
+    const mapped = arr
+      .filter((p) => p !== null && p !== undefined)
+      .map((p) => ({
+        id: p.id || p._id,
+        nombre: p.name || p.nombre || "Sin nombre",
+        descripcion: p.description || p.descripcion || "",
+        precio: p.price || p.precio || 0,
+        image: p.image || p.imagen || "https://placekitten.com/300/200",
+        categoria: (p.categoria || p.category || "")
+          .toString()
+          .trim()
+          .toLowerCase(), // 👈 AQUÍ SE ARREGLA TODO
+      }));
+
       console.log("✅ Productos mapeados:", mapped);
       
      console.log(

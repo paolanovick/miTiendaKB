@@ -10,29 +10,21 @@ import Separador2 from "../components/Separador2";
 import ContactForm from "../components/ContactForm";
 
 const Home = ({ products }) => {
-  // 🔹 Filtrar productos por categoría
-   const morrales = products.filter(
-     // 👈 CAMBIAR "bolsos" por "morrales"
-     (p) =>
-       p.category?.toLowerCase() === "morrales" ||
-       p.categoria?.toLowerCase() === "morrales"
-   );
-  const mochilas = products.filter(
-    (p) =>
-      p.category?.toLowerCase() === "mochilas" ||
-      p.categoria?.toLowerCase() === "mochilas"
-  );
- 
-  const accesorios = products.filter(
-    (p) =>
-      p.category?.toLowerCase() === "accesorios" ||
-      p.categoria?.toLowerCase() === "accesorios"
-  );
+  // 🔹 Normalizar texto para evitar errores
+  const normalize = (str) => str?.toString().trim().toLowerCase();
 
+  // 🔹 Filtrar por categorías de forma segura
+  const morrales = products.filter(
+    (p) => normalize(p.categoria) === "morrales"
+  );
+  const mochilas = products.filter(
+    (p) => normalize(p.categoria) === "mochilas"
+  );
+  const accesorios = products.filter(
+    (p) => normalize(p.categoria) === "accesorios"
+  );
   const carteras = products.filter(
-    (p) =>
-      p.category?.toLowerCase() === "carteras" ||
-      p.categoria?.toLowerCase() === "carteras"
+    (p) => normalize(p.categoria) === "carteras"
   );
 
   return (
@@ -48,10 +40,10 @@ const Home = ({ products }) => {
       {/* 🔹 Carrusel de categorías principales */}
       <InfiniteCarousel />
 
-      {/* 🎒 Sección Mochilas */}
-      {mochilas.length > 0 && (
-        <section className="pt-24 py-16 bg-gray-50">
-          <ProductList products={mochilas} paginated={true} />
+      {/* 🎒 Sección Morrales */}
+      {morrales.length > 0 && ( // 👈 CAMBIAR "bolsos" por "morrales"
+        <section className="pt-24 py-16 bg-white">
+          <ProductList products={morrales} paginated={false} />
         </section>
       )}
 
@@ -61,10 +53,10 @@ const Home = ({ products }) => {
       {/* 🔹 Carrusel secundario */}
       <InfiniteCarousel2 />
 
-      {/* 🎒 Sección Morrales */}
-      {morrales.length > 0 && ( // 👈 CAMBIAR "bolsos" por "morrales"
-        <section className="pt-24 py-16 bg-white">
-          <ProductList products={morrales} paginated={false} />
+      {/* 🎒 Sección Mochilas */}
+      {mochilas.length > 0 && (
+        <section className="pt-24 py-16 bg-gray-50">
+          <ProductList products={mochilas} paginated={true} />
         </section>
       )}
 
