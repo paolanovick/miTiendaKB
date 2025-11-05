@@ -266,9 +266,10 @@ const Dashboard = () => {
           disabled={loading}
         >
           <option value="">Seleccionar categoría</option>
-          <option value="mochilas">🎒 Mochilas</option>
-          <option value="bolsos">👜 Bolsos</option>
+          <option value="morrales">🎒 Morrales</option>
+          <option value="mochilas">👜 Mochilas</option>
           <option value="accesorios">🕶️ Accesorios</option>
+          <option value="carteras">🕶️ Carteras</option>
         </select>
 
         <button
@@ -289,10 +290,11 @@ const Dashboard = () => {
           className="border border-gray-300 rounded p-2 focus:outline-none focus:border-blue-600"
           disabled={loading}
         >
-          <option value="todos">📦 Todos</option>
-          <option value="mochilas">🎒 Mochilas</option>
-          <option value="bolsos">👜 Bolsos</option>
-          <option value="accesorios">🕶️ Accesorios</option>
+          <option value="todos"> Todos</option>
+          <option value="morrales">🕶 Morrales</option>
+          <option value="mochilas">🕶 Mochilas</option>
+          <option value="accesorios">🕶 Accesorios</option>
+          <option value="carteras">🕶 Carteras</option>
         </select>
       </div>
 
