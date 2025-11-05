@@ -46,26 +46,33 @@ function App() {
       const arr = Array.isArray(data) ? data : [data];
 
       // Filtrar elementos null o undefined antes de mapear
-      const mapped = arr
-        .filter((p) => p !== null && p !== undefined)
-        .map((p) => ({
-          id: p.id || p._id,
-          name: p.name || p.nombre || "Sin nombre",
-          description: p.description || p.descripcion || "",
-          price: p.price || p.precio || 0,
-          image: p.image || p.imagen || "https://placekitten.com/300/200",
-          category: p.category || p.categoria || "mochilas", // 👈 NUEVO: Mapear categoría
-        }));
-
-      console.log("✅ Productos mapeados:", mapped);
-      console.log(
-        
-        mapped.filter((p) => p.category === "mochilas").length
-      );
-      console.log(
-       
-        mapped.filter((p) => p.category === "bolsos").length
-      );
+     const mapped = arr
+       .filter((p) => p !== null && p !== undefined)
+       .map((p) => ({
+         id: p.id || p._id,
+         nombre: p.name || p.nombre || "Sin nombre",
+         descripcion: p.description || p.descripcion || "",
+         precio: p.price || p.precio || 0,
+         image: p.image || p.imagen || "https://placekitten.com/300/200",
+         categoria: p.category || p.categoria || "", // 👈 CAMBIAR AQUÍ
+       }));
+     console.log("✅ Productos mapeados:", mapped);
+     console.log(
+       "📊 Mochilas:",
+       mapped.filter((p) => p.categoria === "mochilas").length // 👈 categoria en español
+     );
+     console.log(
+       "📊 Morrales:",
+       mapped.filter((p) => p.categoria === "morrales").length // 👈 categoria en español
+     );
+     console.log(
+       "📊 Accesorios:",
+       mapped.filter((p) => p.categoria === "accesorios").length // 👈 categoria en español
+     );
+     console.log(
+       "📊 Carteras:",
+       mapped.filter((p) => p.categoria === "carteras").length // 👈 categoria en español
+     );
 
       setProducts(mapped);
     } catch (error) {

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
-  const [filtered, setFiltered] = useState([]); // 🔹 productos filtrados
-  const [categoryFilter, setCategoryFilter] = useState("todos"); // 🔹 filtro activo
+  const [filtered, setFiltered] = useState([]);
+  const [categoryFilter, setCategoryFilter] = useState("todos");
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState(null);
@@ -24,14 +24,28 @@ const Dashboard = () => {
       const response = await fetch("/api/products");
       const data = await response.json();
 
+      console.log("📦 Datos crudos de la API:", data);
+
       const mappedProducts = data.map((p) => ({
-        id: p._id,
-        nombre: p.nombre,
-        descripcion: p.descripcion,
-        precio: p.precio,
-        image: p.image,
-        categoria: p.categoria || "mochilas",
+        id: p._id || p.id,
+        nombre: p.nombre || p.name || "Sin nombre",
+        descripcion: p.descripcion || p.description || "",
+        precio: p.precio || p.price || 0,
+        image: p.image || p.imagen || "",
+        categoria: p.categoria || p.category || "", // 👈 CORREGIDO: acepta ambos campos
       }));
+
+      console.log("✅ Productos mapeados:", mappedProducts);
+      console.log("📊 Por categoría:", {
+        morrales: mappedProducts.filter((p) => p.categoria === "morrales")
+          .length,
+        mochilas: mappedProducts.filter((p) => p.categoria === "mochilas")
+          .length,
+        accesorios: mappedProducts.filter((p) => p.categoria === "accesorios")
+          .length,
+        carteras: mappedProducts.filter((p) => p.categoria === "carteras")
+          .length,
+      });
 
       setProducts(mappedProducts);
       setFiltered(mappedProducts);
@@ -97,6 +111,8 @@ const Dashboard = () => {
             image: form.image,
             categoria: form.categoria,
           };
+
+      console.log("📤 Enviando al servidor:", body);
 
       const response = await fetch("/api/products", {
         method,
@@ -269,7 +285,7 @@ const Dashboard = () => {
           <option value="morrales">🎒 Morrales</option>
           <option value="mochilas">👜 Mochilas</option>
           <option value="accesorios">🕶️ Accesorios</option>
-          <option value="carteras">🕶️ Carteras</option>
+          <option value="carteras">💼 Carteras</option>
         </select>
 
         <button
@@ -290,11 +306,11 @@ const Dashboard = () => {
           className="border border-gray-300 rounded p-2 focus:outline-none focus:border-blue-600"
           disabled={loading}
         >
-          <option value="todos"> Todos</option>
-          <option value="morrales">🕶 Morrales</option>
-          <option value="mochilas">🕶 Mochilas</option>
-          <option value="accesorios">🕶 Accesorios</option>
-          <option value="carteras">🕶 Carteras</option>
+          <option value="todos">📦 Todos</option>
+          <option value="morrales">🎒 Morrales</option>
+          <option value="mochilas">👜 Mochilas</option>
+          <option value="accesorios">🕶️ Accesorios</option>
+          <option value="carteras">💼 Carteras</option>
         </select>
       </div>
 
