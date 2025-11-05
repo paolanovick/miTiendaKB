@@ -143,7 +143,7 @@ export default function Footer() {
 
         {/* Pie de página */}
         <div className="footer-bottom mt-8 text-center text-sm">
-          © {new Date().getFullYear()} Travel Connect. Todos los derechos
+          © {new Date().getFullYear()} KUKE Bags. Todos los derechos
           reservados.
         </div>
         <div className="footer-bottom mt-8 text-center text-sm">
