@@ -11,19 +11,18 @@ import ContactForm from "../components/ContactForm";
 
 const Home = ({ products }) => {
   // 🔹 Filtrar productos por categoría
+   const morrales = products.filter(
+     // 👈 CAMBIAR "bolsos" por "morrales"
+     (p) =>
+       p.category?.toLowerCase() === "morrales" ||
+       p.categoria?.toLowerCase() === "morrales"
+   );
   const mochilas = products.filter(
     (p) =>
       p.category?.toLowerCase() === "mochilas" ||
       p.categoria?.toLowerCase() === "mochilas"
   );
-
-  const morrales = products.filter(
-    // 👈 CAMBIAR "bolsos" por "morrales"
-    (p) =>
-      p.category?.toLowerCase() === "morrales" ||
-      p.categoria?.toLowerCase() === "morrales"
-  );
-
+ 
   const accesorios = products.filter(
     (p) =>
       p.category?.toLowerCase() === "accesorios" ||

@@ -56,7 +56,8 @@ function App() {
          image: p.image || p.imagen || "https://placekitten.com/300/200",
          categoria: p.category || p.categoria || "", // 👈 CAMBIAR AQUÍ
        }));
-     console.log("✅ Productos mapeados:", mapped);
+      console.log("✅ Productos mapeados:", mapped);
+      
      console.log(
        "📊 Mochilas:",
        mapped.filter((p) => p.categoria === "mochilas").length // 👈 categoria en español
@@ -65,10 +66,7 @@ function App() {
        "📊 Morrales:",
        mapped.filter((p) => p.categoria === "morrales").length // 👈 categoria en español
      );
-     console.log(
-       "📊 Accesorios:",
-       mapped.filter((p) => p.categoria === "accesorios").length // 👈 categoria en español
-     );
+    
      console.log(
        "📊 Carteras:",
        mapped.filter((p) => p.categoria === "carteras").length // 👈 categoria en español
