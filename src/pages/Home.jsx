@@ -4,6 +4,7 @@ import ProductList from "../components/ProductList";
 import InfiniteCarousel from "../components/InfiniteCarousel";
 import InfiniteCarousel2 from "../components/InfiniteCarousel2";
 import InfiniteCarousel3 from "../components/InfiniteCarousel3";
+import InfiniteCarousel4 from "../components/InfiniteCarousel4";
 import Separador from "../components/Separador";
 import Separador2 from "../components/Separador2";
 import ContactForm from "../components/ContactForm";
@@ -27,10 +28,14 @@ const Home = ({ products }) => {
       p.category?.toLowerCase() === "accesorios" ||
       p.categoria?.toLowerCase() === "accesorios"
   );
+   const carteras = products.filter(
+     (p) =>
+       p.category?.toLowerCase() === "carteras" ||
+       p.categoria?.toLowerCase() === "carteras"
+   );
 
   return (
     <>
-      
       {/* 🖼️ Hero Section */}
       <div
         className="w-full h-screen bg-cover bg-center bg-no-repeat"
@@ -67,6 +72,17 @@ const Home = ({ products }) => {
 
       {/* 🔹 Carrusel terciario */}
       <InfiniteCarousel3 />
+      {/* 👜 Sección Carteras */}
+      {carteras.length > 0 && (
+        <section className="pt-24 py-16 bg-white">
+          <ProductList products={carteras} paginated={false} />
+        </section>
+      )}
+      {/* Separador decorativo 2 */}
+      <Separador2 />
+
+      {/* 🔹 Carrusel terciario */}
+      <InfiniteCarousel4 />
 
       {/* ✨ Sección Accesorios */}
       {accesorios.length > 0 && (
